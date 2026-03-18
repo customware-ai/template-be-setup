@@ -409,8 +409,8 @@ export function createDefaultCpqWorkspace(): CpqWorkspace {
         project_name: "Retro Brand Focal Walls",
         revision_label: "4.0",
         region: "International",
-        status: "review",
-        workflow_stage: "Pricing Approved",
+        status: "draft",
+        workflow_stage: "Lead Created",
         notes: "Priority estimate for a phased lobby refresh.",
         intake_prompt: "",
         build_selections: [
@@ -470,7 +470,7 @@ export function createDefaultCpqWorkspace(): CpqWorkspace {
       },
     ],
     ui: {
-      active_workflow_step_id: "pricing-approved",
+      active_workflow_step_id: "lead-created",
       active_role: "admin",
       theme_mode: "light",
     },

@@ -37,9 +37,47 @@ function setViewportWidth(width: number): void {
   });
 }
 
+/**
+ * Radix Select expects pointer-capture APIs that jsdom does not implement.
+ */
+function installPointerCaptureStubs(): void {
+  Object.defineProperties(HTMLElement.prototype, {
+    hasPointerCapture: {
+      configurable: true,
+      value: (): boolean => false,
+    },
+    releasePointerCapture: {
+      configurable: true,
+      value: (): void => undefined,
+    },
+    setPointerCapture: {
+      configurable: true,
+      value: (): void => undefined,
+    },
+    scrollIntoView: {
+      configurable: true,
+      value: (): void => undefined,
+    },
+  });
+}
+
+/**
+ * Reads the persisted role from the seeded workspace payload.
+ */
+function readStoredRole(): string | null {
+  const workspace = window.localStorage.getItem("cohesiv_cpq_workspace");
+
+  if (!workspace) {
+    return null;
+  }
+
+  return JSON.parse(workspace).ui.active_role as string;
+}
+
 describe("main layout", () => {
   beforeEach(() => {
     setViewportWidth(1280);
+    installPointerCaptureStubs();
     clearCpqWorkspaceFromStorage();
     seedCpqWorkspaceInStorage();
   });
@@ -50,6 +88,14 @@ describe("main layout", () => {
 
     expect(await screen.findByText("Customware CPQ")).toBeInTheDocument();
     expect(screen.getByText("Workflow")).toBeInTheDocument();
+    expect(screen.getByText("0 of 15 steps")).toBeInTheDocument();
+    expect(screen.getByText("0%")).toBeInTheDocument();
+    expect(screen.getByText("Lead Capture")).toBeInTheDocument();
+    expect(screen.getByText("Step 1 of 3")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Lead Created" })).toHaveAttribute(
+      "aria-current",
+      "step",
+    );
     expect(screen.getAllByRole("link", { name: "Dashboard" })).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Estimates" })).toHaveLength(2);
     expect(screen.getAllByRole("link", { name: "Configure" })).toHaveLength(2);
@@ -119,5 +165,20 @@ describe("main layout", () => {
     await userEvent.click(screen.getByRole("button", { name: "Theme utility" }));
 
     expect(document.documentElement.classList.contains("dark")).toBe(true);
+  });
+
+  it("keeps role preview in memory instead of persisting it", async () => {
+    const router = createLayoutRouter(["/"]);
+    render(<RouterProvider router={router} />);
+
+    expect(readStoredRole()).toBe("admin");
+
+    await userEvent.click(screen.getByRole("button", { name: "View as Role" }));
+    await userEvent.click(screen.getByRole("combobox"));
+    await userEvent.click(await screen.findByRole("option", { name: "Viewer" }));
+
+    expect(await screen.findByText("Active role:")).toBeInTheDocument();
+    expect(screen.getByText("Viewer")).toBeInTheDocument();
+    expect(readStoredRole()).toBe("admin");
   });
 });

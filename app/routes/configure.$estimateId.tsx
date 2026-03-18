@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { Link, useParams, useSearchParams } from "react-router";
 import {
   ChevronRight,
-  ClipboardCheck,
   Minus,
   PackagePlus,
   Plus,
@@ -12,8 +11,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
 import { Skeleton } from "../components/ui/Skeleton";
-import { Textarea } from "../components/ui/Textarea";
 import {
   canEditWorkspace,
   canViewPricing,
@@ -138,8 +137,23 @@ export default function ConfigureEstimatePage(): ReactElement {
   }
 
   const estimate = getEstimateById(workspace, estimateId);
+  const normalizedFilter = estimate?.intake_prompt.trim().toLowerCase() ?? "";
+  const filteredPackages = useMemo(
+    () =>
+      workspace.packages.filter((packageRecord) => {
+        if (!normalizedFilter) {
+          return true;
+        }
+
+        const searchIndex = [packageRecord.name, packageRecord.description]
+          .join(" ")
+          .toLowerCase();
+
+        return searchIndex.includes(normalizedFilter);
+      }),
+    [normalizedFilter, workspace.packages],
+  );
   const groupedCatalog = useMemo((): Array<{ category: string; items: CatalogItem[] }> => {
-    const normalizedPrompt = estimate?.intake_prompt.trim().toLowerCase() ?? "";
     const grouped = new Map<string, CatalogItem[]>();
 
     for (const catalogItem of workspace.catalog) {
@@ -153,7 +167,7 @@ export default function ConfigureEstimatePage(): ReactElement {
         .join(" ")
         .toLowerCase();
 
-      if (normalizedPrompt && !searchIndex.includes(normalizedPrompt)) {
+      if (normalizedFilter && !searchIndex.includes(normalizedFilter)) {
         continue;
       }
 
@@ -165,7 +179,7 @@ export default function ConfigureEstimatePage(): ReactElement {
       category,
       items,
     }));
-  }, [estimate?.intake_prompt, workspace.catalog]);
+  }, [normalizedFilter, workspace.catalog]);
 
   if (!estimate) {
     return (
@@ -240,23 +254,16 @@ export default function ConfigureEstimatePage(): ReactElement {
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-5">
-          <section className="rounded-xl border border-stone-200 bg-sky-50 px-4 py-4 dark:border-zinc-800 dark:bg-sky-950/20">
-            <div className="flex items-center gap-2 text-lg font-semibold text-sky-800 dark:text-sky-300">
-              <ClipboardCheck className="h-5 w-5" />
-              <span>What do you need?</span>
-            </div>
-            <div className="mt-2 text-sm text-sky-700 dark:text-sky-300/80">
-              Describe the application to filter the catalog and keep the build aligned.
-            </div>
-            <div className="mt-4">
-              <Textarea
-                value={estimate.intake_prompt}
-                placeholder='e.g. "heavy duty 20 ton lifting" or "annual safety compliance"'
-                onChange={(event) =>
-                  updateEstimateIntakePrompt(estimate.id, event.target.value)
-                }
-              />
-            </div>
+          <section className="rounded-xl border border-stone-200 bg-card px-4 py-4 dark:border-zinc-800">
+            <Input
+              label="Filter build options"
+              value={estimate.intake_prompt}
+              placeholder='Type to filter packages and catalog items, e.g. "inspection"'
+              helperText="Search by application, product name, SKU, or keyword."
+              onChange={(event) =>
+                updateEstimateIntakePrompt(estimate.id, event.target.value)
+              }
+            />
           </section>
 
           {!isEditable && (
@@ -272,7 +279,7 @@ export default function ConfigureEstimatePage(): ReactElement {
                   Packages
                 </div>
                 <div className="grid gap-4 lg:grid-cols-2">
-                  {workspace.packages.map((packageRecord) => (
+                  {filteredPackages.map((packageRecord) => (
                     <PackageCard
                       key={packageRecord.id}
                       name={packageRecord.name}
@@ -284,9 +291,9 @@ export default function ConfigureEstimatePage(): ReactElement {
                 </div>
               </section>
 
-              {groupedCatalog.length === 0 ? (
+              {filteredPackages.length === 0 && groupedCatalog.length === 0 ? (
                 <section className="rounded-xl border border-dashed border-stone-300 px-4 py-8 text-sm text-stone-500 dark:border-zinc-700 dark:text-zinc-400">
-                  No catalog items match the current intake prompt. Adjust the prompt or clear it to browse the full catalog.
+                  No build options match the current filter. Adjust the text or clear it to browse the full catalog.
                 </section>
               ) : (
                 groupedCatalog.map((categoryGroup) => (

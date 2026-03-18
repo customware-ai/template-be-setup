@@ -328,7 +328,11 @@ export default function EstimateDetailPage(): ReactElement {
         )}
 
         {activeTab === "submittal" && (
-          <div className="space-y-3 px-5 py-5">
+          <div className="space-y-4 px-5 py-5">
+            <div className="text-sm text-stone-500 dark:text-zinc-400">
+              Advance the mocked customer review milestones from the estimate workspace.
+            </div>
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {[
               { stepId: "proposal-sent", label: "Mark Proposal Sent" },
               { stepId: "customer-reviewed", label: "Mark Customer Reviewed" },
@@ -336,6 +340,7 @@ export default function EstimateDetailPage(): ReactElement {
             ].map((step) => (
               <Button
                 key={step.stepId}
+                className="h-12 w-full justify-start rounded-xl px-4"
                 variant={
                   workspace.ui.active_workflow_step_id === step.stepId
                     ? "default"
@@ -347,6 +352,7 @@ export default function EstimateDetailPage(): ReactElement {
                 <span>{step.label}</span>
               </Button>
             ))}
+            </div>
           </div>
         )}
 

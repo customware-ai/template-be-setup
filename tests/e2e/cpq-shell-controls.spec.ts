@@ -8,6 +8,11 @@ test.describe("cpq shell controls e2e", () => {
     await seedWorkspace(page);
     await page.reload();
     await expect(page.getByText("Workflow")).toBeVisible();
+    await expect(page.getByText("0 of 15 steps")).toBeVisible();
+    await expect(page.getByText("0%")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Lead Created" }),
+    ).toHaveAttribute("aria-current", "step");
     const sidebarGap = page.locator('[data-slot="sidebar-gap"]').first();
     const sidebarContainer = page.locator('[data-slot="sidebar-container"]').first();
 
@@ -81,7 +86,7 @@ test.describe("cpq shell controls e2e", () => {
     expect(mobileColors.headerBackground).toBe("rgb(34, 34, 37)");
   });
 
-  test("supports division creation and read-only role preview", async ({
+  test("supports division creation and temporary read-only role preview", async ({
     page,
   }) => {
     await page.goto("/");
@@ -94,6 +99,10 @@ test.describe("cpq shell controls e2e", () => {
     await expect(
       page.getByText("Add packages or products to start the build."),
     ).toBeVisible();
+    await expect(
+      page.getByRole("textbox", { name: "Filter build options" }),
+    ).toBeVisible();
+    await expect(page.getByText("What do you need?")).toHaveCount(0);
 
     await page.getByRole("navigation").getByRole("link", { name: "Dashboard" }).click();
 
@@ -128,8 +137,9 @@ test.describe("cpq shell controls e2e", () => {
 
     await expect(
       page.getByText("viewer role is read-only", { exact: false }),
-    ).toBeVisible();
-    await expect(page.getByLabel("Build total")).toHaveText("Hidden");
+    ).toHaveCount(0);
+    await expect(page.getByLabel("Build total")).not.toHaveText("Hidden");
+    await expect(page.getByRole("button", { name: "Add" }).first()).toBeEnabled();
   });
 
   test("closes the mobile workflow drawer after selecting a step", async ({

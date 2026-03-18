@@ -45,4 +45,31 @@ describe("estimate route", () => {
 
     expect(await screen.findByText("mock-file-2.pdf")).toBeInTheDocument();
   });
+
+  it("renders the submittal actions in the estimate workspace", async () => {
+    render(
+      <MemoryRouter initialEntries={["/estimates/est-001002?tab=submittal"]}>
+        <Routes>
+          <Route path="/estimates/:estimateId" element={<EstimateDetailPage />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await screen.findByRole("heading", { name: "EST-001002" });
+
+    expect(
+      screen.getByText(
+        "Advance the mocked customer review milestones from the estimate workspace.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Mark Proposal Sent" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Mark Customer Reviewed" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Mark PO Received" }),
+    ).toBeInTheDocument();
+  });
 });

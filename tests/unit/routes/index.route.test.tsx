@@ -25,6 +25,8 @@ describe("dashboard route", () => {
       screen.getByRole("heading", { name: "Opportunities (1)" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Retro Brand Focal Walls")).toBeInTheDocument();
+    expect(screen.getByText(/Lead Created • 35% probability/i)).toBeInTheDocument();
+    expect(screen.getByText("Draft")).toBeInTheDocument();
   });
 
   it("edits account details and creates a new division", async () => {

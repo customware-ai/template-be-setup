@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import {
   addCatalogItemToEstimateInWorkspace,
   addMockAttachmentToEstimateInWorkspace,
@@ -10,7 +11,6 @@ import {
   removeAttachmentFromEstimateInWorkspace,
   removeSelectionFromWorkspace,
   setActiveEstimateInWorkspace,
-  setActiveRoleInWorkspace,
   setActiveWorkflowStepInWorkspace,
   toggleThemeModeInWorkspace,
   type AccountSummary,
@@ -37,6 +37,32 @@ export const CPQ_WORKSPACE_STORAGE_KEY = "cohesiv_cpq_workspace";
  * Stable seeded workspace reference used during hydration.
  */
 const DEFAULT_CPQ_WORKSPACE = createDefaultCpqWorkspace();
+let rolePreviewOverride: UserRole | null = null;
+const rolePreviewListeners = new Set<(role: UserRole | null) => void>();
+
+/**
+ * Shares the in-memory role preview across routes without persisting it.
+ */
+function setRolePreviewOverride(role: UserRole | null): void {
+  rolePreviewOverride = role;
+
+  for (const listener of rolePreviewListeners) {
+    listener(rolePreviewOverride);
+  }
+}
+
+/**
+ * Subscribes hook instances so role preview changes stay in sync.
+ */
+function subscribeToRolePreview(
+  listener: (role: UserRole | null) => void,
+): () => void {
+  rolePreviewListeners.add(listener);
+
+  return (): void => {
+    rolePreviewListeners.delete(listener);
+  };
+}
 
 /**
  * Shared hook contract for the local-first CPQ starter.
@@ -79,6 +105,7 @@ interface UseCpqWorkspaceStorageResult {
  * Clears the CPQ workspace from localStorage.
  */
 export function clearCpqWorkspaceFromStorage(): void {
+  setRolePreviewOverride(null);
   clearLocalStorageKey(CPQ_WORKSPACE_STORAGE_KEY);
 }
 
@@ -104,6 +131,30 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   const [workspace, setWorkspace, isHydrated] = useLocalStorage(
     CPQ_WORKSPACE_STORAGE_KEY,
     DEFAULT_CPQ_WORKSPACE,
+  );
+  const [activeRolePreview, setActiveRolePreview] = useState<UserRole | null>(
+    rolePreviewOverride,
+  );
+
+  /**
+   * A preview role should follow the live shell in-memory, but should never be
+   * written into the persisted workspace payload.
+   */
+  useEffect(() => subscribeToRolePreview(setActiveRolePreview), []);
+
+  /**
+   * Consumers should read the preview role when present so route permissions
+   * update immediately without mutating local storage.
+   */
+  const workspaceWithRolePreview = useMemo<CpqWorkspace>(
+    () => ({
+      ...workspace,
+      ui: {
+        ...workspace.ui,
+        active_role: activeRolePreview ?? workspace.ui.active_role,
+      },
+    }),
+    [activeRolePreview, workspace],
   );
 
   /**
@@ -137,6 +188,7 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
    * Restores the default seeded workspace.
    */
   const resetWorkspace = (): void => {
+    setRolePreviewOverride(null);
     replaceWorkspace(createDefaultCpqWorkspace());
   };
 
@@ -319,12 +371,10 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   };
 
   /**
-   * Persists the active demo role for RBAC previews.
+   * Updates the active demo role for RBAC previews without persisting it.
    */
   const setActiveRole = (role: UserRole): void => {
-    commitWorkspaceUpdate((currentWorkspace) =>
-      setActiveRoleInWorkspace(currentWorkspace, role),
-    );
+    setRolePreviewOverride(role);
   };
 
   /**
@@ -337,7 +387,7 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   };
 
   return {
-    workspace,
+    workspace: workspaceWithRolePreview,
     isHydrated,
     replaceWorkspace,
     resetWorkspace,

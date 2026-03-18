@@ -59,12 +59,17 @@ describe("configure route", () => {
       </MemoryRouter>,
     );
 
-    const intakePrompt = await screen.findByRole("textbox");
+    expect(screen.queryByText("What do you need?")).not.toBeInTheDocument();
+
+    const intakePrompt = await screen.findByRole("textbox", {
+      name: "Filter build options",
+    });
 
     await userEvent.clear(intakePrompt);
-    await userEvent.type(intakePrompt, "inspection");
+    await userEvent.type(intakePrompt, "starter");
 
-    expect((await screen.findAllByText("Inspection Plan")).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("button", { name: "Add" })).toHaveLength(1);
+    expect(await screen.findByText("Starter Crane Package")).toBeInTheDocument();
+    expect(screen.queryByText("Inspection Plan")).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Services" })).not.toBeInTheDocument();
   });
 });
