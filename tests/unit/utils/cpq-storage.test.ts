@@ -72,7 +72,6 @@ describe("useCpqWorkspaceStorage", () => {
     });
 
     expect(estimateId).toContain("est-");
-    expect(result.current.workspace.opportunities[0]?.estimate_id).toBe(estimateId);
     expect(result.current.workspace.estimates[0]?.id).toBe(estimateId);
   });
 });

@@ -27,7 +27,7 @@ export const UserRoleSchema = z.enum([
 export const ThemeModeSchema = z.enum(["light", "dark"]);
 
 /**
- * Workflow step contract persisted in the browser workspace.
+ * Workflow step contract derived from the active mock workflow position.
  */
 export const WorkflowStepSchema = z.object({
   id: z.string().min(1),
@@ -36,7 +36,7 @@ export const WorkflowStepSchema = z.object({
 });
 
 /**
- * Workflow section contract persisted in the browser workspace.
+ * Workflow section contract derived from the active mock workflow position.
  */
 export const WorkflowSectionSchema = z.object({
   id: z.string().min(1),
@@ -69,7 +69,7 @@ export const AccountSummarySchema = z.object({
 });
 
 /**
- * Lightweight opportunity summary rendered on the dashboard.
+ * Lightweight dashboard summary projected from persisted estimates.
  */
 export const OpportunitySummarySchema = z.object({
   id: z.string().min(1),
@@ -170,11 +170,11 @@ export const CpqUiStateSchema = z.object({
 
 /**
  * Root mocked CPQ workspace stored in localStorage.
+ * Only mutable source data is persisted; workflow and dashboard summaries are
+ * derived from this shape at read time.
  */
 export const CpqWorkspaceSchema = z.object({
   account: AccountSummarySchema,
-  workflow: z.array(WorkflowSectionSchema).min(1),
-  opportunities: z.array(OpportunitySummarySchema).min(1),
   estimates: z.array(EstimateSchema).min(1),
   catalog: z.array(CatalogItemSchema).min(1),
   packages: z.array(CatalogPackageSchema).min(1),
@@ -282,7 +282,7 @@ const DASHBOARD_WORKFLOW_STEP_IDS = new Set<string>([
 ]);
 
 /**
- * Builds the seeded workflow with enough detail for a real mock workflow.
+ * Defines the static workflow skeleton used by the mock process controls.
  */
 function createBaseWorkflowSections(): WorkflowSection[] {
   return [
@@ -389,8 +389,6 @@ function createBaseWorkflowSections(): WorkflowSection[] {
  * Generates a stable seeded workspace for first-run and test seeding.
  */
 export function createDefaultCpqWorkspace(): CpqWorkspace {
-  const workflow = createBaseWorkflowSections();
-
   return {
     account: {
       id: "acct-dr-inc",
@@ -403,18 +401,6 @@ export function createDefaultCpqWorkspace(): CpqWorkspace {
       address: "1480 Ridgeway Dr, Chicago, IL",
       notes: "Priority account with phased installs and regional approvals.",
     },
-    workflow,
-    opportunities: [
-      {
-        id: "opp-dr-pm",
-        estimate_id: "est-001002",
-        name: "DR INC - PM",
-        kind: "PM",
-        stage: "qualification",
-        probability: 50,
-        value: 0,
-      },
-    ],
     estimates: [
       {
         id: "est-001002",
@@ -515,12 +501,19 @@ export function getEstimateById(
 }
 
 /**
+ * Derives workflow sections from the one persisted active step id.
+ */
+export function getWorkflowSections(workspace: CpqWorkspace): WorkflowSection[] {
+  return buildWorkflowSections(workspace.ui.active_workflow_step_id);
+}
+
+/**
  * Flattens workflow sections into a step list for navigation and progress.
  */
 export function getWorkflowStepMetas(
   workspace: CpqWorkspace,
 ): WorkflowStepMeta[] {
-  return workspace.workflow.flatMap((section) =>
+  return getWorkflowSections(workspace).flatMap((section) =>
     section.steps.map(
       (step, stepIndex): WorkflowStepMeta => ({
         sectionId: section.id,
@@ -679,7 +672,7 @@ export function getEstimateTotals(
  */
 export function getDashboardMetrics(workspace: CpqWorkspace): DashboardMetrics {
   const quoteCount = workspace.estimates.length;
-  const opportunityCount = workspace.opportunities.length;
+  const opportunityCount = workspace.estimates.length;
 
   const totals = workspace.estimates.map((estimate) =>
     getEstimateTotals(workspace, estimate.id),
@@ -701,6 +694,29 @@ export function getDashboardMetrics(workspace: CpqWorkspace): DashboardMetrics {
 }
 
 /**
+ * Projects persisted estimates into the lighter dashboard list cards.
+ */
+export function getDashboardOpportunitySummaries(
+  workspace: CpqWorkspace,
+): OpportunitySummary[] {
+  const probabilityByStatus: Record<EstimateStatus, number> = {
+    draft: 35,
+    review: 65,
+    approved: 100,
+  };
+
+  return workspace.estimates.map((estimate) => ({
+    id: estimate.id,
+    estimate_id: estimate.id,
+    name: estimate.project_name,
+    kind: `${estimate.status.charAt(0).toUpperCase()}${estimate.status.slice(1)}`,
+    stage: estimate.workflow_stage,
+    probability: probabilityByStatus[estimate.status],
+    value: getEstimateTotals(workspace, estimate.id).total,
+  }));
+}
+
+/**
  * Counts completed workflow steps for progress UI.
  */
 export function getWorkflowProgress(workspace: CpqWorkspace): {
@@ -708,7 +724,7 @@ export function getWorkflowProgress(workspace: CpqWorkspace): {
   totalSteps: number;
   percent: number;
 } {
-  const allSteps = workspace.workflow.flatMap((section) => section.steps);
+  const allSteps = getWorkflowSections(workspace).flatMap((section) => section.steps);
   const completeSteps = allSteps.filter((step) => step.state === "complete").length;
   const totalSteps = allSteps.length;
   const percent =
@@ -776,10 +792,8 @@ export function canApproveEstimate(role: UserRole): boolean {
  * Rebuilds section and step states around the selected step so the workflow rail
  * acts like a real process control instead of static copy.
  */
-function rebuildWorkflowSections(
-  sections: WorkflowSection[],
-  activeStepId: string,
-): WorkflowSection[] {
+function buildWorkflowSections(activeStepId: string): WorkflowSection[] {
+  const sections = createBaseWorkflowSections();
   const orderedStepIds = sections.flatMap((section) =>
     section.steps.map((step) => step.id),
   );
@@ -861,14 +875,18 @@ export function setActiveWorkflowStepInWorkspace(
   workspace: CpqWorkspace,
   stepId: string,
 ): CpqWorkspace {
-  const workflow = rebuildWorkflowSections(workspace.workflow, stepId);
-  const currentStep = getWorkflowStepMetas({ ...workspace, workflow }).find(
+  const currentStep = getWorkflowStepMetas({
+    ...workspace,
+    ui: {
+      ...workspace.ui,
+      active_workflow_step_id: stepId,
+    },
+  }).find(
     (step) => step.stepId === stepId,
   );
 
   return {
     ...workspace,
-    workflow,
     ui: {
       ...workspace.ui,
       active_workflow_step_id: stepId,
@@ -1154,17 +1172,15 @@ export function removeAttachmentFromEstimateInWorkspace(
 }
 
 /**
- * Creates a fresh division/opportunity pair so the dashboard CTA has a real
- * mocked outcome instead of a dead button.
+ * Creates a fresh division estimate so the dashboard CTA has a real mocked
+ * outcome instead of a dead button.
  */
 export function createDivisionInWorkspace(
   workspace: CpqWorkspace,
 ): { workspace: CpqWorkspace; estimateId: string } {
-  const nextIndex = workspace.opportunities.length + 1;
+  const nextIndex = workspace.estimates.length + 1;
   const estimateId = createWorkspaceId("est");
-  const opportunityId = createWorkspaceId("opp");
   const estimateNumber = `EST-${(1003 + nextIndex).toString().padStart(6, "0")}`;
-  const opportunityName = `${workspace.account.name} - Division ${nextIndex}`;
 
   const nextEstimate: Estimate = {
     id: estimateId,
@@ -1183,27 +1199,15 @@ export function createDivisionInWorkspace(
     updated_at: new Date().toISOString(),
   };
 
-  const nextOpportunity: OpportunitySummary = {
-    id: opportunityId,
-    estimate_id: estimateId,
-    name: opportunityName,
-    kind: "Division",
-    stage: "configure",
-    probability: 35,
-    value: 0,
-  };
-
   return {
     workspace: {
       ...workspace,
-      opportunities: [nextOpportunity, ...workspace.opportunities],
       estimates: [nextEstimate, ...workspace.estimates],
       active_estimate_id: estimateId,
       ui: {
         ...workspace.ui,
         active_workflow_step_id: "equipment-selected",
       },
-      workflow: rebuildWorkflowSections(workspace.workflow, "equipment-selected"),
     },
     estimateId,
   };

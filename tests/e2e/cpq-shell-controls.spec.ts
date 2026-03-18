@@ -29,7 +29,7 @@ test.describe("cpq shell controls e2e", () => {
     await expect(page.getByText("Active role: viewer")).toBeVisible();
     await page.keyboard.press("Escape");
 
-    await page.getByRole("link", { name: /DR INC - PM/ }).click();
+    await page.getByRole("link", { name: /Retro Brand Focal Walls/ }).click();
 
     await expect(
       page.getByRole("button", { name: "Approval Role Required" }),

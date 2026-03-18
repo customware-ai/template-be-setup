@@ -31,8 +31,6 @@ import { useCpqWorkspaceStorage } from "../utils/cpq-storage";
 const configureTabs = [
   { id: "configure", label: "Configure" },
   { id: "quote", label: "Quote" },
-  { id: "preview", label: "Preview" },
-  { id: "analytics", label: "Analytics" },
 ] as const;
 
 type ConfigureTabId = (typeof configureTabs)[number]["id"];
@@ -347,44 +345,6 @@ export default function ConfigureEstimatePage(): ReactElement {
             </section>
           )}
 
-          {activeTab === "preview" && (
-            <section className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-stone-800">
-              <div className="text-xl font-semibold text-stone-950 dark:text-stone-100">
-                Quote Preview
-              </div>
-              <div className="mt-4 rounded-lg border border-stone-200 bg-stone-50 px-4 py-4 text-sm text-stone-600 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300">
-                {estimate.account_name} • {estimate.project_name} • {estimate.revision_label}
-              </div>
-              <div className="mt-4 space-y-2 text-sm text-stone-600 dark:text-stone-300">
-                <div>Workflow stage: {estimate.workflow_stage}</div>
-                <div>Total items: {totals.itemCount}</div>
-                <div>Total value: {formatPriceVisibility(totals.total, activeRole)}</div>
-              </div>
-            </section>
-          )}
-
-          {activeTab === "analytics" && (
-            <section className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-xl border border-stone-200 bg-card px-4 py-4 dark:border-stone-800">
-                <div className="text-sm text-stone-500 dark:text-stone-400">Margin</div>
-                <div className="mt-2 text-2xl font-semibold text-stone-950 dark:text-stone-100">
-                  {pricingVisible ? formatPercent(totals.marginPercent) : "Hidden"}
-                </div>
-              </div>
-              <div className="rounded-xl border border-stone-200 bg-card px-4 py-4 dark:border-stone-800">
-                <div className="text-sm text-stone-500 dark:text-stone-400">Item Count</div>
-                <div className="mt-2 text-2xl font-semibold text-stone-950 dark:text-stone-100">
-                  {totals.itemCount}
-                </div>
-              </div>
-              <div className="rounded-xl border border-stone-200 bg-card px-4 py-4 dark:border-stone-800">
-                <div className="text-sm text-stone-500 dark:text-stone-400">Bundle Savings</div>
-                <div className="mt-2 text-2xl font-semibold text-stone-950 dark:text-stone-100">
-                  {pricingVisible ? formatCurrency(totals.packageSavings) : "Hidden"}
-                </div>
-              </div>
-            </section>
-          )}
         </div>
 
         <aside className="space-y-4">

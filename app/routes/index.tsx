@@ -15,6 +15,7 @@ import { Input } from "../components/ui/Input";
 import { Skeleton } from "../components/ui/Skeleton";
 import { Textarea } from "../components/ui/Textarea";
 import {
+  getDashboardOpportunitySummaries,
   formatCurrency,
   formatPercent,
   getDashboardMetrics,
@@ -83,6 +84,7 @@ export default function IndexPage(): ReactElement {
   }
 
   const metrics = getDashboardMetrics(workspace);
+  const opportunitySummaries = getDashboardOpportunitySummaries(workspace);
 
   /**
    * The dashboard fields write through immediately so the mock feels like a real
@@ -214,7 +216,7 @@ export default function IndexPage(): ReactElement {
           <div className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-stone-500 dark:text-stone-400" />
             <h2 className="text-2xl font-semibold text-stone-950 dark:text-stone-100">
-              Opportunities ({workspace.opportunities.length})
+              Opportunities ({opportunitySummaries.length})
             </h2>
           </div>
           <Button
@@ -229,7 +231,7 @@ export default function IndexPage(): ReactElement {
         </div>
 
         <div className="space-y-3 px-5 py-5">
-          {workspace.opportunities.map((opportunity) => (
+          {opportunitySummaries.map((opportunity) => (
             <Link
               key={opportunity.id}
               to={`/estimates/${opportunity.estimate_id}`}

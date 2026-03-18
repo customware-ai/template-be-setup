@@ -17,7 +17,6 @@ import {
   canViewPricing,
   formatCurrency,
   formatPriceVisibility,
-  formatPercent,
   getEstimateById,
   getEstimateLineItems,
   getEstimateTotals,
@@ -28,8 +27,6 @@ import { useCpqWorkspaceStorage } from "../utils/cpq-storage";
 
 const estimateTabs = [
   { id: "items-bom", label: "Items & BOM" },
-  { id: "supplier-pricing", label: "Supplier Pricing" },
-  { id: "cost-sell", label: "Cost & Sell" },
   { id: "bid-form", label: "Bid Form" },
   { id: "submittal", label: "Submittal" },
   { id: "files", label: "Files" },
@@ -314,69 +311,6 @@ export default function EstimateDetailPage(): ReactElement {
               </div>
             </div>
           </>
-        )}
-
-        {activeTab === "supplier-pricing" && (
-          <div className="space-y-3 px-5 py-5">
-            {lineItems.map((lineItem) => (
-              <div
-                key={lineItem.id}
-                className="grid gap-3 rounded-lg border border-stone-200 px-4 py-4 dark:border-stone-800 md:grid-cols-4"
-              >
-                <div>
-                  <div className="font-semibold text-stone-900 dark:text-stone-100">
-                    {lineItem.name}
-                  </div>
-                  <div className="text-sm text-stone-500 dark:text-stone-400">
-                    {lineItem.sku}
-                  </div>
-                </div>
-                <div className="text-sm text-stone-600 dark:text-stone-300">
-                  Lead time: {lineItem.lead_time_days} days
-                </div>
-                <div className="text-sm text-stone-600 dark:text-stone-300">
-                  Supplier cost: {formatPriceVisibility(lineItem.unit_cost, activeRole)}
-                </div>
-                <div className="text-sm text-stone-600 dark:text-stone-300">
-                  Sell price: {formatPriceVisibility(lineItem.unit_price, activeRole)}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {activeTab === "cost-sell" && (
-          <div className="space-y-3 px-5 py-5">
-            {lineItems.map((lineItem) => {
-              const marginPercent =
-                lineItem.line_total > 0
-                  ? (lineItem.line_margin / lineItem.line_total) * 100
-                  : 0;
-
-              return (
-                <div
-                  key={lineItem.id}
-                  className="grid gap-3 rounded-lg border border-stone-200 px-4 py-4 dark:border-stone-800 md:grid-cols-5"
-                >
-                  <div className="font-semibold text-stone-900 dark:text-stone-100">
-                    {lineItem.name}
-                  </div>
-                  <div className="text-sm text-stone-600 dark:text-stone-300">
-                    Cost: {formatPriceVisibility(lineItem.unit_cost, activeRole)}
-                  </div>
-                  <div className="text-sm text-stone-600 dark:text-stone-300">
-                    Sell: {formatPriceVisibility(lineItem.unit_price, activeRole)}
-                  </div>
-                  <div className="text-sm text-stone-600 dark:text-stone-300">
-                    Margin: {pricingVisible ? formatCurrency(lineItem.line_margin) : "Hidden"}
-                  </div>
-                  <div className="text-sm text-stone-600 dark:text-stone-300">
-                    Margin %: {pricingVisible ? formatPercent(marginPercent) : "Hidden"}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         )}
 
         {activeTab === "bid-form" && (

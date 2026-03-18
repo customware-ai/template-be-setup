@@ -144,13 +144,16 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
    * Clones the requested estimate and returns the new estimate id.
    */
   const duplicateEstimate = (estimateId: string): string | null => {
-    const duplication = duplicateEstimateInWorkspace(workspace, estimateId);
-    if (!duplication) {
-      return null;
-    }
+    let duplicatedEstimateId: string | null = null;
 
-    replaceWorkspace(duplication.workspace);
-    return duplication.duplicatedEstimateId;
+    commitWorkspaceUpdate((currentWorkspace) => {
+      const duplication = duplicateEstimateInWorkspace(currentWorkspace, estimateId);
+      duplicatedEstimateId = duplication?.duplicatedEstimateId ?? null;
+
+      return duplication?.workspace ?? currentWorkspace;
+    });
+
+    return duplicatedEstimateId;
   };
 
   /**
@@ -276,9 +279,16 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
    * Creates a new mocked division/opportunity pair and returns its estimate id.
    */
   const createDivision = (): string => {
-    const creation = createDivisionInWorkspace(workspace);
-    replaceWorkspace(creation.workspace);
-    return creation.estimateId;
+    let createdEstimateId = "";
+
+    commitWorkspaceUpdate((currentWorkspace) => {
+      const creation = createDivisionInWorkspace(currentWorkspace);
+      createdEstimateId = creation.estimateId;
+
+      return creation.workspace;
+    });
+
+    return createdEstimateId;
   };
 
   /**

@@ -12,6 +12,7 @@ import { Button } from "../ui/Button";
 import {
   getCurrentWorkflowStep,
   getWorkflowProgress,
+  getWorkflowSections,
   getWorkflowStepMetas,
   getWorkflowTargetHref,
   type CpqWorkspace,
@@ -90,6 +91,7 @@ export function WorkflowRail({
 }: WorkflowRailProps): ReactElement {
   const navigate = useNavigate();
   const progress = getWorkflowProgress(workspace);
+  const workflowSections = getWorkflowSections(workspace);
   const currentWorkflowStep = getCurrentWorkflowStep(workspace);
   const orderedSteps = getWorkflowStepMetas(workspace);
 
@@ -172,7 +174,7 @@ export function WorkflowRail({
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
         <div className="space-y-3">
-          {workspace.workflow.map((section) => {
+          {workflowSections.map((section) => {
             const sectionStepTarget =
               section.steps.find((step) => step.state === "current")?.id ??
               section.steps[0]?.id;
