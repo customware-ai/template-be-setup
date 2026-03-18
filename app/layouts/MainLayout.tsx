@@ -114,7 +114,7 @@ export default function MainLayout(): ReactElement {
         </div>
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-          <header className="border-b border-stone-200 bg-card dark:border-stone-800">
+          <header className="border-b border-stone-200 bg-card dark:border-zinc-800">
             <div className="flex h-14 items-center gap-3 px-4 lg:px-6">
               <Sheet open={isWorkflowSheetOpen} onOpenChange={setIsWorkflowSheetOpen}>
                 <SheetTrigger asChild>
@@ -146,9 +146,9 @@ export default function MainLayout(): ReactElement {
 
               <Link
                 to="/"
-                className="flex min-w-0 items-center gap-3 text-stone-900 dark:text-stone-100"
+                className="flex min-w-0 items-center gap-3 text-stone-900 dark:text-zinc-100"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-md border border-stone-300 bg-stone-100 text-xs font-semibold dark:border-stone-700 dark:bg-stone-900">
+                <div className="flex h-8 w-8 items-center justify-center rounded-md border border-stone-300 bg-stone-100 text-xs font-semibold dark:border-zinc-700 dark:bg-zinc-900">
                   CW
                 </div>
                 <div className="min-w-0">
@@ -165,9 +165,9 @@ export default function MainLayout(): ReactElement {
                     to={item.href}
                     className={({ isActive }): string =>
                       cn(
-                        "rounded-md px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-900 dark:hover:text-stone-100",
+                        "rounded-md px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
                         (isActive || item.matches(location.pathname)) &&
-                          "bg-stone-100 text-stone-900 dark:bg-stone-900 dark:text-stone-100",
+                          "bg-stone-100 text-stone-900 dark:bg-zinc-900 dark:text-zinc-100",
                       )
                     }
                   >
@@ -208,9 +208,9 @@ export default function MainLayout(): ReactElement {
                           { label: "Viewer", value: "viewer" },
                         ]}
                       />
-                      <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300">
+                      <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
                         Active role:{" "}
-                        <span className="font-semibold capitalize text-stone-900 dark:text-stone-100">
+                        <span className="font-semibold capitalize text-stone-900 dark:text-zinc-100">
                           {workspace.ui.active_role}
                         </span>
                       </div>
@@ -246,14 +246,14 @@ export default function MainLayout(): ReactElement {
                         workflow outcome.
                       </SheetDescription>
                     </SheetHeader>
-                    <div className="space-y-3 px-4 pb-4 text-sm text-stone-600 dark:text-stone-300">
-                      <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-stone-800 dark:bg-stone-900">
+                    <div className="space-y-3 px-4 pb-4 text-sm text-stone-600 dark:text-zinc-300">
+                      <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
                         Current workflow step:{" "}
-                        <span className="font-semibold text-stone-900 dark:text-stone-100">
+                        <span className="font-semibold text-stone-900 dark:text-zinc-100">
                           {currentWorkflowStep?.stepLabel ?? "Unavailable"}
                         </span>
                       </div>
-                      <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-stone-800 dark:bg-stone-900">
+                      <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
                         Use the left workflow rail to move through mocked stages,
                         the role switcher to preview permissions, and the configure
                         page to build quotes with persisted local data.
@@ -276,9 +276,9 @@ export default function MainLayout(): ReactElement {
                       </SheetDescription>
                     </SheetHeader>
                     <div className="space-y-3 px-4 pb-4">
-                      <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300">
+                      <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
                         Signed in as Demo User. Current role is{" "}
-                        <span className="font-semibold capitalize text-stone-900 dark:text-stone-100">
+                        <span className="font-semibold capitalize text-stone-900 dark:text-zinc-100">
                           {workspace.ui.active_role}
                         </span>
                         .
@@ -297,7 +297,7 @@ export default function MainLayout(): ReactElement {
               </div>
             </div>
 
-            <div className="border-t border-stone-200 bg-stone-50 px-4 py-2 md:hidden dark:border-stone-800 dark:bg-stone-950">
+            <div className="border-t border-stone-200 bg-stone-50 px-4 py-2 md:hidden dark:border-zinc-800 dark:bg-zinc-950">
               <div className="flex items-center gap-2 overflow-x-auto">
                 {navigationItems.map((item) => (
                   <NavLink
@@ -305,9 +305,9 @@ export default function MainLayout(): ReactElement {
                     to={item.href}
                     className={({ isActive }): string =>
                       cn(
-                        "whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-900 dark:hover:text-stone-100",
+                        "whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
                         (isActive || item.matches(location.pathname)) &&
-                          "bg-stone-100 text-stone-900 dark:bg-stone-900 dark:text-stone-100",
+                          "bg-stone-100 text-stone-900 dark:bg-zinc-900 dark:text-zinc-100",
                       )
                     }
                   >

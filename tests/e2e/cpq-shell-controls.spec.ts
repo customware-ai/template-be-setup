@@ -2,6 +2,61 @@ import { expect, test } from "@playwright/test";
 import { seedWorkspace } from "./support/cpq";
 
 test.describe("cpq shell controls e2e", () => {
+  test("renders dark mode with neutral shell colors on desktop and mobile", async ({
+    page,
+  }) => {
+    /**
+     * The shell colors come from a mix of CSS variables and dark-only utility
+     * classes, so the regression check reads the actual rendered values.
+     */
+    const readShellColors = async (): Promise<{
+      isDark: boolean;
+      shellBackground: string | null;
+      headerBackground: string;
+      cardBackground: string | null;
+    }> =>
+      page.evaluate(() => {
+        const shell = document.querySelector(".min-h-screen.bg-background");
+        const header = document.querySelector("header");
+        const card = document.querySelector("section.rounded-xl");
+
+        return {
+          isDark: document.documentElement.classList.contains("dark"),
+          shellBackground: shell ? getComputedStyle(shell).backgroundColor : null,
+          headerBackground: header
+            ? getComputedStyle(header).backgroundColor
+            : "",
+          cardBackground: card ? getComputedStyle(card).backgroundColor : null,
+        };
+      });
+
+    await page.goto("/");
+    await seedWorkspace(page);
+    await page.reload();
+
+    await page.getByRole("button", { name: "Theme utility" }).click();
+
+    await expect(page.locator("html")).toHaveClass(/dark/);
+
+    const desktopColors = await readShellColors();
+
+    expect(desktopColors).toEqual({
+      isDark: true,
+      shellBackground: "rgb(24, 24, 27)",
+      headerBackground: "rgb(34, 34, 37)",
+      cardBackground: "rgb(34, 34, 37)",
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.getByRole("button", { name: "Open workflow" }).click();
+    await expect(page.getByRole("dialog", { name: "Workflow" })).toBeVisible();
+
+    const mobileColors = await readShellColors();
+
+    expect(mobileColors.shellBackground).toBe("rgb(24, 24, 27)");
+    expect(mobileColors.headerBackground).toBe("rgb(34, 34, 37)");
+  });
+
   test("supports division creation and read-only role preview", async ({
     page,
   }) => {

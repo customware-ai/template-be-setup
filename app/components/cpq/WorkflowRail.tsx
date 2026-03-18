@@ -76,7 +76,7 @@ function getStepDotTone(state: WorkflowState): string {
     return "border-amber-500 bg-amber-500";
   }
 
-  return "border-stone-300 bg-transparent dark:border-stone-700";
+  return "border-stone-300 bg-transparent dark:border-zinc-700";
 }
 
 /**
@@ -139,18 +139,18 @@ export function WorkflowRail({
     <aside
       aria-label="Workflow"
       className={cn(
-        "flex h-full min-h-0 w-full flex-col border-r border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-950",
+        "flex h-full min-h-0 w-full flex-col border-r border-stone-200 bg-stone-50 dark:border-zinc-800 dark:bg-zinc-950",
         className,
       )}
     >
-      <div className="border-b border-stone-200 px-4 py-4 dark:border-stone-800">
+      <div className="border-b border-stone-200 px-4 py-4 dark:border-zinc-800">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+            <div className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
               {workspace.account.name}
             </div>
-            <div className="mt-2 flex items-center gap-2 text-[15px] font-semibold text-stone-900 dark:text-stone-100">
-              <Target className="h-4 w-4 text-stone-500 dark:text-stone-400" />
+            <div className="mt-2 flex items-center gap-2 text-[15px] font-semibold text-stone-900 dark:text-zinc-100">
+              <Target className="h-4 w-4 text-stone-500 dark:text-zinc-400" />
               <span>Workflow</span>
             </div>
           </div>
@@ -158,13 +158,13 @@ export function WorkflowRail({
             <span>Advance</span>
           </Button>
         </div>
-        <div className="mt-3 flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
+        <div className="mt-3 flex items-center justify-between text-xs text-stone-500 dark:text-zinc-400">
           <span>
             {progress.completeSteps} of {progress.totalSteps} steps
           </span>
           <span>{progress.percent}%</span>
         </div>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-sm bg-stone-200 dark:bg-stone-800">
+        <div className="mt-2 h-1.5 overflow-hidden rounded-sm bg-stone-200 dark:bg-zinc-800">
           <div
             className="h-full bg-amber-500 transition-[width] duration-200 ease-out"
             style={{ width: `${progress.percent}%` }}
@@ -187,23 +187,23 @@ export function WorkflowRail({
                     sectionStepTarget ? handleSelectStep(sectionStepTarget) : undefined
                   }
                   className={cn(
-                    "w-full rounded-lg border px-3 py-3 text-left transition-colors duration-150 hover:border-stone-300 hover:bg-white dark:hover:border-stone-700 dark:hover:bg-stone-900",
+                    "w-full rounded-lg border px-3 py-3 text-left transition-colors duration-150 hover:border-stone-300 hover:bg-white dark:hover:border-zinc-700 dark:hover:bg-zinc-900",
                     getSectionTone(section.state),
                   )}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="mt-0.5 rounded-md border border-stone-200 bg-white p-1.5 text-stone-600 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300">
+                    <div className="mt-0.5 rounded-md border border-stone-200 bg-white p-1.5 text-stone-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
                       {getWorkflowIcon(section)}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+                      <div className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
                         {section.title}
                       </div>
-                      <div className="text-xs text-stone-500 dark:text-stone-400">
+                      <div className="text-xs text-stone-500 dark:text-zinc-400">
                         {section.summary}
                       </div>
                     </div>
-                    <ChevronRight className="mt-0.5 h-4 w-4 text-stone-400 dark:text-stone-500" />
+                    <ChevronRight className="mt-0.5 h-4 w-4 text-stone-400 dark:text-zinc-500" />
                   </div>
                 </button>
 
@@ -218,8 +218,8 @@ export function WorkflowRail({
                           type="button"
                           onClick={() => handleSelectStep(step.id)}
                           className={cn(
-                            "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors duration-150 hover:bg-stone-100 dark:hover:bg-stone-900",
-                            isActiveStep && "bg-stone-100 dark:bg-stone-900",
+                            "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors duration-150 hover:bg-stone-100 dark:hover:bg-zinc-900",
+                            isActiveStep && "bg-stone-100 dark:bg-zinc-900",
                           )}
                           aria-current={isActiveStep ? "step" : undefined}
                         >
@@ -233,8 +233,8 @@ export function WorkflowRail({
                             className={cn(
                               "leading-5",
                               step.state === "upcoming"
-                                ? "text-stone-400 dark:text-stone-500"
-                                : "text-stone-700 dark:text-stone-200",
+                                ? "text-stone-400 dark:text-zinc-500"
+                                : "text-stone-700 dark:text-zinc-200",
                             )}
                           >
                             {step.label}
@@ -250,11 +250,11 @@ export function WorkflowRail({
         </div>
       </div>
 
-      <div className="border-t border-stone-200 px-4 py-4 dark:border-stone-800">
-        <div className="text-sm font-semibold text-stone-900 dark:text-stone-100">
+      <div className="border-t border-stone-200 px-4 py-4 dark:border-zinc-800">
+        <div className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
           Demo User
         </div>
-        <div className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+        <div className="mt-1 text-xs text-stone-500 dark:text-zinc-400">
           {workspace.ui.active_role}
         </div>
       </div>

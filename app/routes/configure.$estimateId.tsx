@@ -50,11 +50,11 @@ function PackageCard({
   disabled: boolean;
 }): ReactElement {
   return (
-    <div className="rounded-xl border border-stone-200 bg-card px-4 py-4 dark:border-stone-800">
-      <div className="text-xl font-semibold text-stone-950 dark:text-stone-100">
+    <div className="rounded-xl border border-stone-200 bg-card px-4 py-4 dark:border-zinc-800">
+      <div className="text-xl font-semibold text-stone-950 dark:text-zinc-100">
         {name}
       </div>
-      <div className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+      <div className="mt-2 text-sm text-stone-500 dark:text-zinc-400">
         {description}
       </div>
       <div className="mt-4">
@@ -82,13 +82,13 @@ function CatalogItemCard({
   pricingVisible: boolean;
 }): ReactElement {
   return (
-    <div className="rounded-xl border border-stone-200 bg-card px-4 py-4 dark:border-stone-800">
+    <div className="rounded-xl border border-stone-200 bg-card px-4 py-4 dark:border-zinc-800">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-xl font-semibold text-stone-950 dark:text-stone-100">
+          <div className="text-xl font-semibold text-stone-950 dark:text-zinc-100">
             {item.name}
           </div>
-          <div className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <div className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
             {item.description}
           </div>
         </div>
@@ -97,7 +97,7 @@ function CatalogItemCard({
         </div>
       </div>
       <div className="mt-5 flex items-center justify-between">
-        <div className="text-xs text-stone-500 dark:text-stone-400">
+        <div className="text-xs text-stone-500 dark:text-zinc-400">
           {item.sku} • {item.lead_time_days}D
         </div>
         <Button onClick={onAdd} disabled={disabled}>
@@ -169,11 +169,11 @@ export default function ConfigureEstimatePage(): ReactElement {
 
   if (!estimate) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-card px-6 py-8 dark:border-stone-800">
-        <h1 className="text-2xl font-semibold text-stone-950 dark:text-stone-100">
+      <div className="rounded-xl border border-stone-200 bg-card px-6 py-8 dark:border-zinc-800">
+        <h1 className="text-2xl font-semibold text-stone-950 dark:text-zinc-100">
           Estimate not found
         </h1>
-        <p className="mt-2 text-[15px] text-stone-500 dark:text-stone-400">
+        <p className="mt-2 text-[15px] text-stone-500 dark:text-zinc-400">
           The mocked workspace does not contain that configure target.
         </p>
         <div className="mt-4">
@@ -194,27 +194,27 @@ export default function ConfigureEstimatePage(): ReactElement {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
-        <Link to="/" className="transition-colors hover:text-stone-900 dark:hover:text-stone-100">
+      <div className="flex flex-wrap items-center gap-2 text-sm text-stone-500 dark:text-zinc-400">
+        <Link to="/" className="transition-colors hover:text-stone-900 dark:hover:text-zinc-100">
           Dashboard
         </Link>
         <ChevronRight className="h-4 w-4" />
         <Link
           to={`/estimates/${estimate.id}`}
-          className="transition-colors hover:text-stone-900 dark:hover:text-stone-100"
+          className="transition-colors hover:text-stone-900 dark:hover:text-zinc-100"
         >
           {estimate.estimate_number}
         </Link>
         <ChevronRight className="h-4 w-4" />
-        <span className="text-stone-700 dark:text-stone-200">Configure</span>
+        <span className="text-stone-700 dark:text-zinc-200">Configure</span>
       </div>
 
-      <div className="flex flex-col gap-4 border-b border-stone-200 pb-5 dark:border-stone-800 xl:flex-row xl:items-start xl:justify-between">
+      <div className="flex flex-col gap-4 border-b border-stone-200 pb-5 dark:border-zinc-800 xl:flex-row xl:items-start xl:justify-between">
         <div className="space-y-3">
-          <h1 className="text-[32px] font-semibold tracking-tight text-stone-950 dark:text-stone-100">
+          <h1 className="text-[32px] font-semibold tracking-tight text-stone-950 dark:text-zinc-100">
             Configure
           </h1>
-          <div className="text-[15px] text-stone-500 dark:text-stone-400">
+          <div className="text-[15px] text-stone-500 dark:text-zinc-400">
             {estimate.account_name} • {estimate.project_name}
           </div>
         </div>
@@ -228,8 +228,8 @@ export default function ConfigureEstimatePage(): ReactElement {
               className={cn(
                 "rounded-md px-3 py-2 text-sm transition-colors duration-150",
                 tab.id === activeTab
-                  ? "border border-stone-200 bg-card font-medium text-stone-900 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100"
-                  : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-900 dark:hover:text-stone-100",
+                  ? "border border-stone-200 bg-card font-medium text-stone-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                  : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
               )}
             >
               {tab.label}
@@ -240,7 +240,7 @@ export default function ConfigureEstimatePage(): ReactElement {
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-5">
-          <section className="rounded-xl border border-stone-200 bg-sky-50 px-4 py-4 dark:border-stone-800 dark:bg-sky-950/20">
+          <section className="rounded-xl border border-stone-200 bg-sky-50 px-4 py-4 dark:border-zinc-800 dark:bg-sky-950/20">
             <div className="flex items-center gap-2 text-lg font-semibold text-sky-800 dark:text-sky-300">
               <ClipboardCheck className="h-5 w-5" />
               <span>What do you need?</span>
@@ -260,7 +260,7 @@ export default function ConfigureEstimatePage(): ReactElement {
           </section>
 
           {!isEditable && (
-            <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300">
+            <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
               {activeRole} role is read-only. Switch role from the header to edit the build.
             </div>
           )}
@@ -268,7 +268,7 @@ export default function ConfigureEstimatePage(): ReactElement {
           {activeTab === "configure" && (
             <>
               <section className="space-y-4">
-                <div className="text-xl font-semibold text-stone-950 dark:text-stone-100">
+                <div className="text-xl font-semibold text-stone-950 dark:text-zinc-100">
                   Packages
                 </div>
                 <div className="grid gap-4 lg:grid-cols-2">
@@ -285,17 +285,17 @@ export default function ConfigureEstimatePage(): ReactElement {
               </section>
 
               {groupedCatalog.length === 0 ? (
-                <section className="rounded-xl border border-dashed border-stone-300 px-4 py-8 text-sm text-stone-500 dark:border-stone-700 dark:text-stone-400">
+                <section className="rounded-xl border border-dashed border-stone-300 px-4 py-8 text-sm text-stone-500 dark:border-zinc-700 dark:text-zinc-400">
                   No catalog items match the current intake prompt. Adjust the prompt or clear it to browse the full catalog.
                 </section>
               ) : (
                 groupedCatalog.map((categoryGroup) => (
                   <section key={categoryGroup.category} className="space-y-4">
                     <div className="flex items-baseline gap-2">
-                      <h2 className="text-xl font-semibold text-stone-950 dark:text-stone-100">
+                      <h2 className="text-xl font-semibold text-stone-950 dark:text-zinc-100">
                         {categoryGroup.category}
                       </h2>
-                      <Search className="h-4 w-4 text-stone-400 dark:text-stone-500" />
+                      <Search className="h-4 w-4 text-stone-400 dark:text-zinc-500" />
                     </div>
                     <div className="grid gap-4 lg:grid-cols-2">
                       {categoryGroup.items.map((catalogItem) => (
@@ -315,28 +315,28 @@ export default function ConfigureEstimatePage(): ReactElement {
           )}
 
           {activeTab === "quote" && (
-            <section className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-stone-800">
-              <div className="text-xl font-semibold text-stone-950 dark:text-stone-100">
+            <section className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-zinc-800">
+              <div className="text-xl font-semibold text-stone-950 dark:text-zinc-100">
                 Quote Summary
               </div>
               <div className="mt-4 space-y-3">
                 {lineItems.map((lineItem) => (
                   <div
                     key={lineItem.id}
-                    className="grid gap-3 rounded-lg border border-stone-200 px-4 py-4 dark:border-stone-800 md:grid-cols-[minmax(0,1fr)_120px_140px]"
+                    className="grid gap-3 rounded-lg border border-stone-200 px-4 py-4 dark:border-zinc-800 md:grid-cols-[minmax(0,1fr)_120px_140px]"
                   >
                     <div>
-                      <div className="font-semibold text-stone-900 dark:text-stone-100">
+                      <div className="font-semibold text-stone-900 dark:text-zinc-100">
                         {lineItem.name}
                       </div>
-                      <div className="text-sm text-stone-500 dark:text-stone-400">
+                      <div className="text-sm text-stone-500 dark:text-zinc-400">
                         {lineItem.quantity} x {lineItem.uom}
                       </div>
                     </div>
-                    <div className="text-sm text-stone-600 dark:text-stone-300">
+                    <div className="text-sm text-stone-600 dark:text-zinc-300">
                       Lead time: {lineItem.lead_time_days}D
                     </div>
-                    <div className="text-right text-sm font-medium text-stone-900 dark:text-stone-100">
+                    <div className="text-right text-sm font-medium text-stone-900 dark:text-zinc-100">
                       {formatPriceVisibility(lineItem.line_total, activeRole)}
                     </div>
                   </div>
@@ -348,9 +348,9 @@ export default function ConfigureEstimatePage(): ReactElement {
         </div>
 
         <aside className="space-y-4">
-          <section className="rounded-xl border border-stone-200 bg-card dark:border-stone-800">
-            <div className="border-b border-stone-200 px-4 py-4 dark:border-stone-800">
-              <div className="flex items-center gap-2 text-xl font-semibold text-stone-950 dark:text-stone-100">
+          <section className="rounded-xl border border-stone-200 bg-card dark:border-zinc-800">
+            <div className="border-b border-stone-200 px-4 py-4 dark:border-zinc-800">
+              <div className="flex items-center gap-2 text-xl font-semibold text-stone-950 dark:text-zinc-100">
                 <ShoppingCart className="h-5 w-5" />
                 <span>Build</span>
               </div>
@@ -360,14 +360,14 @@ export default function ConfigureEstimatePage(): ReactElement {
               {lineItems.map((lineItem) => (
                 <div
                   key={lineItem.id}
-                  className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-3 dark:border-stone-800 dark:bg-stone-900"
+                  className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-3 dark:border-zinc-800 dark:bg-zinc-900"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <div className="font-semibold text-stone-950 dark:text-stone-100">
+                      <div className="font-semibold text-stone-950 dark:text-zinc-100">
                         {lineItem.name}
                       </div>
-                      <div className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                      <div className="mt-1 text-xs text-stone-500 dark:text-zinc-400">
                         {lineItem.package_id ? "BUN" : lineItem.category}
                       </div>
                     </div>
@@ -375,7 +375,7 @@ export default function ConfigureEstimatePage(): ReactElement {
                       type="button"
                       onClick={() => removeSelection(estimate.id, lineItem.id)}
                       disabled={!isEditable}
-                      className="rounded-md p-1 text-stone-400 transition-colors duration-150 hover:bg-stone-200 hover:text-stone-700 disabled:pointer-events-none disabled:opacity-40 dark:hover:bg-stone-800 dark:hover:text-stone-200"
+                      className="rounded-md p-1 text-stone-400 transition-colors duration-150 hover:bg-stone-200 hover:text-stone-700 disabled:pointer-events-none disabled:opacity-40 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
                       aria-label={`Remove ${lineItem.name}`}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -383,7 +383,7 @@ export default function ConfigureEstimatePage(): ReactElement {
                   </div>
 
                   <div className="mt-3 flex items-center justify-between gap-4">
-                    <div className="inline-flex items-center rounded-md border border-stone-200 bg-card dark:border-stone-800 dark:bg-stone-950">
+                    <div className="inline-flex items-center rounded-md border border-stone-200 bg-card dark:border-zinc-800 dark:bg-zinc-950">
                       <button
                         type="button"
                         onClick={() =>
@@ -394,12 +394,12 @@ export default function ConfigureEstimatePage(): ReactElement {
                           )
                         }
                         disabled={!isEditable}
-                        className="px-3 py-2 text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-40 dark:text-stone-300 dark:hover:bg-stone-900 dark:hover:text-stone-100"
+                        className="px-3 py-2 text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-40 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
                         aria-label={`Decrease ${lineItem.name}`}
                       >
                         <Minus className="h-4 w-4" />
                       </button>
-                      <div className="min-w-10 border-x border-stone-200 px-3 py-2 text-center text-sm font-medium text-stone-900 dark:border-stone-800 dark:text-stone-100">
+                      <div className="min-w-10 border-x border-stone-200 px-3 py-2 text-center text-sm font-medium text-stone-900 dark:border-zinc-800 dark:text-zinc-100">
                         {lineItem.quantity}
                       </div>
                       <button
@@ -412,7 +412,7 @@ export default function ConfigureEstimatePage(): ReactElement {
                           )
                         }
                         disabled={!isEditable}
-                        className="px-3 py-2 text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-40 dark:text-stone-300 dark:hover:bg-stone-900 dark:hover:text-stone-100"
+                        className="px-3 py-2 text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 disabled:pointer-events-none disabled:opacity-40 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
                         aria-label={`Increase ${lineItem.name}`}
                       >
                         <Plus className="h-4 w-4" />
@@ -420,10 +420,10 @@ export default function ConfigureEstimatePage(): ReactElement {
                     </div>
 
                     <div className="text-right">
-                      <div className="text-xl font-semibold text-stone-950 dark:text-stone-100">
+                      <div className="text-xl font-semibold text-stone-950 dark:text-zinc-100">
                         {formatPriceVisibility(lineItem.line_total, activeRole)}
                       </div>
-                      <div className="text-xs text-stone-500 dark:text-stone-400">
+                      <div className="text-xs text-stone-500 dark:text-zinc-400">
                         {pricingVisible ? formatCurrency(lineItem.unit_price) : "Hidden"} each
                       </div>
                     </div>
@@ -432,39 +432,39 @@ export default function ConfigureEstimatePage(): ReactElement {
               ))}
 
               {lineItems.length === 0 && (
-                <div className="rounded-lg border border-dashed border-stone-300 px-4 py-6 text-sm text-stone-500 dark:border-stone-700 dark:text-stone-400">
+                <div className="rounded-lg border border-dashed border-stone-300 px-4 py-6 text-sm text-stone-500 dark:border-zinc-700 dark:text-zinc-400">
                   Add packages or products to start the build.
                 </div>
               )}
             </div>
 
-            <div className="border-t border-stone-200 px-4 py-4 dark:border-stone-800">
+            <div className="border-t border-stone-200 px-4 py-4 dark:border-zinc-800">
               <div className="space-y-2 text-sm">
-                <div className="flex items-center justify-between text-stone-600 dark:text-stone-300">
+                <div className="flex items-center justify-between text-stone-600 dark:text-zinc-300">
                   <span>Equipment</span>
                   <span>{formatPriceVisibility(totals.subtotal, activeRole)}</span>
                 </div>
-                <div className="flex items-center justify-between text-stone-600 dark:text-stone-300">
+                <div className="flex items-center justify-between text-stone-600 dark:text-zinc-300">
                   <span>Bundle savings</span>
                   <span>
                     {pricingVisible ? `-${formatCurrency(totals.packageSavings)}` : "Hidden"}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-stone-600 dark:text-stone-300">
+                <div className="flex items-center justify-between text-stone-600 dark:text-zinc-300">
                   <span>Modifiers</span>
                   <span>{formatPriceVisibility(totals.modifiersTotal, activeRole)}</span>
                 </div>
               </div>
-              <div className="mt-4 border-t border-stone-200 pt-4 dark:border-stone-800">
-                <div className="flex items-center justify-between text-sm text-stone-500 dark:text-stone-400">
+              <div className="mt-4 border-t border-stone-200 pt-4 dark:border-zinc-800">
+                <div className="flex items-center justify-between text-sm text-stone-500 dark:text-zinc-400">
                   <span>Margin</span>
                   <span>{pricingVisible ? formatPercent(totals.marginPercent) : "Hidden"}</span>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
-                  <span className="text-xl font-semibold text-stone-950 dark:text-stone-100">
+                  <span className="text-xl font-semibold text-stone-950 dark:text-zinc-100">
                     Total
                   </span>
-                  <span className="text-[30px] font-semibold tracking-tight text-stone-950 dark:text-stone-100">
+                  <span className="text-[30px] font-semibold tracking-tight text-stone-950 dark:text-zinc-100">
                     <span aria-label="Build total">
                       {formatPriceVisibility(totals.total, activeRole)}
                     </span>

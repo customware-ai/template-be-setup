@@ -99,11 +99,11 @@ export default function EstimateDetailPage(): ReactElement {
 
   if (!estimate) {
     return (
-      <div className="rounded-xl border border-stone-200 bg-card px-6 py-8 dark:border-stone-800">
-        <h1 className="text-2xl font-semibold text-stone-950 dark:text-stone-100">
+      <div className="rounded-xl border border-stone-200 bg-card px-6 py-8 dark:border-zinc-800">
+        <h1 className="text-2xl font-semibold text-stone-950 dark:text-zinc-100">
           Estimate not found
         </h1>
-        <p className="mt-2 text-[15px] text-stone-500 dark:text-stone-400">
+        <p className="mt-2 text-[15px] text-stone-500 dark:text-zinc-400">
           The mocked workspace does not contain that estimate.
         </p>
         <div className="mt-4">
@@ -123,22 +123,22 @@ export default function EstimateDetailPage(): ReactElement {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col gap-4 border-b border-stone-200 pb-5 dark:border-stone-800 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-stone-200 pb-5 dark:border-zinc-800 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-3">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="inline-flex items-center gap-2 text-sm font-medium text-stone-600 transition-colors duration-150 hover:text-stone-900 dark:text-stone-300 dark:hover:text-stone-100"
+            className="inline-flex items-center gap-2 text-sm font-medium text-stone-600 transition-colors duration-150 hover:text-stone-900 dark:text-zinc-300 dark:hover:text-zinc-100"
           >
             <ArrowLeft className="h-4 w-4" />
             <span>Back</span>
           </button>
 
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-[34px] font-semibold tracking-tight text-stone-950 dark:text-stone-100">
+            <h1 className="text-[34px] font-semibold tracking-tight text-stone-950 dark:text-zinc-100">
               {estimate.estimate_number}
             </h1>
-            <div className="rounded-md border border-stone-200 bg-stone-100 px-3 py-1 text-sm font-medium text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
+            <div className="rounded-md border border-stone-200 bg-stone-100 px-3 py-1 text-sm font-medium text-stone-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
               {estimate.status}
             </div>
             <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300">
@@ -146,7 +146,7 @@ export default function EstimateDetailPage(): ReactElement {
             </div>
           </div>
 
-          <div className="text-lg text-stone-600 dark:text-stone-300">
+          <div className="text-lg text-stone-600 dark:text-zinc-300">
             {estimate.revision_label} {estimate.project_name}
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function EstimateDetailPage(): ReactElement {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1 border-b border-stone-200 pb-3 text-sm dark:border-stone-800">
+      <div className="flex flex-wrap items-center gap-1 border-b border-stone-200 pb-3 text-sm dark:border-zinc-800">
         {estimateTabs.map((tab) => (
           <button
             key={tab.id}
@@ -195,8 +195,8 @@ export default function EstimateDetailPage(): ReactElement {
             className={cn(
               "rounded-md px-3 py-2 text-sm transition-colors duration-150",
               tab.id === activeTab
-                ? "border border-stone-200 bg-card font-medium text-stone-900 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100"
-                : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-900 dark:hover:text-stone-100",
+                ? "border border-stone-200 bg-card font-medium text-stone-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                : "text-stone-500 hover:bg-stone-100 hover:text-stone-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
             )}
           >
             {tab.label}
@@ -204,13 +204,13 @@ export default function EstimateDetailPage(): ReactElement {
         ))}
       </div>
 
-      <section className="rounded-xl border border-stone-200 bg-card dark:border-stone-800">
-        <div className="flex flex-col gap-3 border-b border-stone-200 px-5 py-4 md:flex-row md:items-center md:justify-between dark:border-stone-800">
+      <section className="rounded-xl border border-stone-200 bg-card dark:border-zinc-800">
+        <div className="flex flex-col gap-3 border-b border-stone-200 px-5 py-4 md:flex-row md:items-center md:justify-between dark:border-zinc-800">
           <div>
-            <h2 className="text-2xl font-semibold text-stone-950 dark:text-stone-100">
+            <h2 className="text-2xl font-semibold text-stone-950 dark:text-zinc-100">
               Estimate workspace
             </h2>
-            <p className="mt-1 text-[15px] text-stone-500 dark:text-stone-400">
+            <p className="mt-1 text-[15px] text-stone-500 dark:text-zinc-400">
               {estimate.notes || "Use the bid form tab to add estimate guidance."}
             </p>
           </div>
@@ -236,7 +236,7 @@ export default function EstimateDetailPage(): ReactElement {
             <div className="overflow-x-auto">
               <table className="min-w-full border-collapse">
                 <thead>
-                  <tr className="border-b border-stone-200 text-left text-sm text-stone-500 dark:border-stone-800 dark:text-stone-400">
+                  <tr className="border-b border-stone-200 text-left text-sm text-stone-500 dark:border-zinc-800 dark:text-zinc-400">
                     <th className="px-5 py-3 font-medium">Item #</th>
                     <th className="px-5 py-3 font-medium">Description</th>
                     <th className="px-5 py-3 font-medium">Specs</th>
@@ -250,32 +250,32 @@ export default function EstimateDetailPage(): ReactElement {
                   {lineItems.map((lineItem) => (
                     <tr
                       key={lineItem.id}
-                      className="border-b border-stone-100 align-top dark:border-stone-900"
+                      className="border-b border-stone-100 align-top dark:border-zinc-900"
                     >
-                      <td className="px-5 py-4 text-sm text-stone-600 dark:text-stone-300">
+                      <td className="px-5 py-4 text-sm text-stone-600 dark:text-zinc-300">
                         {lineItem.sku}
                       </td>
                       <td className="px-5 py-4">
-                        <div className="font-semibold text-stone-900 dark:text-stone-100">
+                        <div className="font-semibold text-stone-900 dark:text-zinc-100">
                           {lineItem.name}
                         </div>
-                        <div className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                        <div className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
                           {lineItem.description}
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-sm text-stone-600 dark:text-stone-300">
+                      <td className="px-5 py-4 text-sm text-stone-600 dark:text-zinc-300">
                         Follow drawing schedule • {lineItem.lead_time_days} day lead
                       </td>
-                      <td className="px-5 py-4 text-sm text-stone-700 dark:text-stone-200">
+                      <td className="px-5 py-4 text-sm text-stone-700 dark:text-zinc-200">
                         {lineItem.quantity}
                       </td>
-                      <td className="px-5 py-4 text-sm text-stone-700 dark:text-stone-200">
+                      <td className="px-5 py-4 text-sm text-stone-700 dark:text-zinc-200">
                         {lineItem.uom}
                       </td>
-                      <td className="px-5 py-4 text-sm text-stone-700 dark:text-stone-200">
+                      <td className="px-5 py-4 text-sm text-stone-700 dark:text-zinc-200">
                         {lineItem.package_id ? "BOM" : "Direct"}
                       </td>
-                      <td className="px-5 py-4 text-right text-sm font-semibold text-stone-900 dark:text-stone-100">
+                      <td className="px-5 py-4 text-right text-sm font-semibold text-stone-900 dark:text-zinc-100">
                         {formatPriceVisibility(lineItem.line_total, activeRole)}
                       </td>
                     </tr>
@@ -284,28 +284,28 @@ export default function EstimateDetailPage(): ReactElement {
               </table>
             </div>
 
-            <div className="grid gap-4 border-t border-stone-200 px-5 py-4 dark:border-stone-800 md:grid-cols-3">
-              <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-stone-800 dark:bg-stone-900">
-                <div className="text-sm text-stone-500 dark:text-stone-400">
+            <div className="grid gap-4 border-t border-stone-200 px-5 py-4 dark:border-zinc-800 md:grid-cols-3">
+              <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="text-sm text-stone-500 dark:text-zinc-400">
                   Item count
                 </div>
-                <div className="mt-1 text-2xl font-semibold text-stone-950 dark:text-stone-100">
+                <div className="mt-1 text-2xl font-semibold text-stone-950 dark:text-zinc-100">
                   {totals.itemCount}
                 </div>
               </div>
-              <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-stone-800 dark:bg-stone-900">
-                <div className="text-sm text-stone-500 dark:text-stone-400">
+              <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="text-sm text-stone-500 dark:text-zinc-400">
                   Package savings
                 </div>
-                <div className="mt-1 text-2xl font-semibold text-stone-950 dark:text-stone-100">
+                <div className="mt-1 text-2xl font-semibold text-stone-950 dark:text-zinc-100">
                   {pricingVisible ? formatCurrency(totals.packageSavings) : "Hidden"}
                 </div>
               </div>
-              <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-stone-800 dark:bg-stone-900">
-                <div className="text-sm text-stone-500 dark:text-stone-400">
+              <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="text-sm text-stone-500 dark:text-zinc-400">
                   Total
                 </div>
-                <div className="mt-1 text-2xl font-semibold text-stone-950 dark:text-stone-100">
+                <div className="mt-1 text-2xl font-semibold text-stone-950 dark:text-zinc-100">
                   {formatPriceVisibility(totals.total, activeRole)}
                 </div>
               </div>
@@ -321,7 +321,7 @@ export default function EstimateDetailPage(): ReactElement {
               placeholder="Add scope notes for the quote package"
               onChange={(event) => updateEstimateNotes(estimate.id, event.target.value)}
             />
-            <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-300">
+            <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
               Current total: {formatPriceVisibility(totals.total, activeRole)}
             </div>
           </div>
@@ -361,13 +361,13 @@ export default function EstimateDetailPage(): ReactElement {
               {estimate.attachments.map((attachment) => (
                 <div
                   key={attachment.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 px-4 py-3 dark:border-stone-800"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 px-4 py-3 dark:border-zinc-800"
                 >
                   <div>
-                    <div className="font-medium text-stone-900 dark:text-stone-100">
+                    <div className="font-medium text-stone-900 dark:text-zinc-100">
                       {attachment.file_name}
                     </div>
-                    <div className="text-sm text-stone-500 dark:text-stone-400">
+                    <div className="text-sm text-stone-500 dark:text-zinc-400">
                       {attachment.kind}
                     </div>
                   </div>

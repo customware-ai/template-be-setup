@@ -99,27 +99,27 @@ export default function IndexPage(): ReactElement {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
+      <div className="flex flex-wrap items-center gap-2 text-sm text-stone-500 dark:text-zinc-400">
         <span>Accounts</span>
         <ChevronRight className="h-4 w-4" />
-        <span className="text-stone-700 dark:text-stone-200">
+        <span className="text-stone-700 dark:text-zinc-200">
           {workspace.account.name}
         </span>
       </div>
 
-      <div className="flex flex-col gap-4 border-b border-stone-200 pb-6 md:flex-row md:items-start md:justify-between dark:border-stone-800">
+      <div className="flex flex-col gap-4 border-b border-stone-200 pb-6 md:flex-row md:items-start md:justify-between dark:border-zinc-800">
         <div className="space-y-3">
-          <div className="text-sm font-medium text-stone-600 dark:text-stone-300">
+          <div className="text-sm font-medium text-stone-600 dark:text-zinc-300">
             Accounts
           </div>
 
           <div className="flex items-start gap-3">
-            <Building2 className="mt-1 h-6 w-6 text-stone-400 dark:text-stone-500" />
+            <Building2 className="mt-1 h-6 w-6 text-stone-400 dark:text-zinc-500" />
             <div>
-              <h1 className="text-[32px] font-semibold tracking-tight text-stone-950 dark:text-stone-100">
+              <h1 className="text-[32px] font-semibold tracking-tight text-stone-950 dark:text-zinc-100">
                 {workspace.account.name}
               </h1>
-              <p className="mt-1 text-[15px] text-stone-500 dark:text-stone-400">
+              <p className="mt-1 text-[15px] text-stone-500 dark:text-zinc-400">
                 {workspace.account.subtitle}
               </p>
             </div>
@@ -139,8 +139,8 @@ export default function IndexPage(): ReactElement {
         </Button>
       </div>
 
-      <section className="rounded-xl border border-stone-200 bg-card dark:border-stone-800">
-        <div className="border-b border-stone-200 px-5 py-4 dark:border-stone-800">
+      <section className="rounded-xl border border-stone-200 bg-card dark:border-zinc-800">
+        <div className="border-b border-stone-200 px-5 py-4 dark:border-zinc-800">
           <div className="inline-flex rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
             {workspace.account.status}
           </div>
@@ -148,9 +148,9 @@ export default function IndexPage(): ReactElement {
 
         <div className="grid gap-4 px-5 py-5 lg:grid-cols-2">
           {accountFields.map((field) => (
-            <div key={field.field} className="rounded-lg border border-stone-200 p-4 dark:border-stone-800">
-              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-stone-600 dark:text-stone-300">
-                <span className="text-stone-400 dark:text-stone-500">
+            <div key={field.field} className="rounded-lg border border-stone-200 p-4 dark:border-zinc-800">
+              <div className="mb-3 flex items-center gap-2 text-sm font-medium text-stone-600 dark:text-zinc-300">
+                <span className="text-stone-400 dark:text-zinc-500">
                   {field.icon}
                 </span>
                 <span>{field.label}</span>
@@ -166,7 +166,7 @@ export default function IndexPage(): ReactElement {
           ))}
         </div>
 
-        <div className="border-t border-stone-200 px-5 py-4 dark:border-stone-800">
+        <div className="border-t border-stone-200 px-5 py-4 dark:border-zinc-800">
           <Textarea
             label="Notes"
             value={workspace.account.notes ?? ""}
@@ -177,45 +177,45 @@ export default function IndexPage(): ReactElement {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-4">
-        <div className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-stone-800">
-          <div className="text-3xl font-semibold text-stone-950 dark:text-stone-100">
+        <div className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-zinc-800">
+          <div className="text-3xl font-semibold text-stone-950 dark:text-zinc-100">
             {metrics.opportunityCount}
           </div>
-          <div className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <div className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
             Opportunities
           </div>
         </div>
-        <div className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-stone-800">
-          <div className="text-3xl font-semibold text-stone-950 dark:text-stone-100">
+        <div className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-zinc-800">
+          <div className="text-3xl font-semibold text-stone-950 dark:text-zinc-100">
             {metrics.quoteCount}
           </div>
-          <div className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <div className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
             Quotes
           </div>
         </div>
-        <div className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-stone-800">
-          <div className="text-3xl font-semibold text-stone-950 dark:text-stone-100">
+        <div className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-zinc-800">
+          <div className="text-3xl font-semibold text-stone-950 dark:text-zinc-100">
             {formatCurrency(metrics.totalValue)}
           </div>
-          <div className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <div className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
             Total Value
           </div>
         </div>
-        <div className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-stone-800">
-          <div className="text-3xl font-semibold text-stone-950 dark:text-stone-100">
+        <div className="rounded-xl border border-stone-200 bg-card px-5 py-5 dark:border-zinc-800">
+          <div className="text-3xl font-semibold text-stone-950 dark:text-zinc-100">
             {formatPercent(metrics.averageMargin)}
           </div>
-          <div className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          <div className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
             Avg Margin
           </div>
         </div>
       </section>
 
-      <section className="rounded-xl border border-stone-200 bg-card dark:border-stone-800">
-        <div className="flex flex-col gap-3 border-b border-stone-200 px-5 py-4 md:flex-row md:items-center md:justify-between dark:border-stone-800">
+      <section className="rounded-xl border border-stone-200 bg-card dark:border-zinc-800">
+        <div className="flex flex-col gap-3 border-b border-stone-200 px-5 py-4 md:flex-row md:items-center md:justify-between dark:border-zinc-800">
           <div className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-stone-500 dark:text-stone-400" />
-            <h2 className="text-2xl font-semibold text-stone-950 dark:text-stone-100">
+            <TrendingUp className="h-5 w-5 text-stone-500 dark:text-zinc-400" />
+            <h2 className="text-2xl font-semibold text-stone-950 dark:text-zinc-100">
               Opportunities ({opportunitySummaries.length})
             </h2>
           </div>
@@ -236,22 +236,22 @@ export default function IndexPage(): ReactElement {
               key={opportunity.id}
               to={`/estimates/${opportunity.estimate_id}`}
               onClick={() => setActiveEstimate(opportunity.estimate_id)}
-              className="flex flex-col gap-3 rounded-lg border border-stone-200 px-4 py-4 transition-colors duration-150 hover:bg-stone-50 dark:border-stone-800 dark:hover:bg-stone-900 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-3 rounded-lg border border-stone-200 px-4 py-4 transition-colors duration-150 hover:bg-stone-50 dark:border-zinc-800 dark:hover:bg-zinc-900 md:flex-row md:items-center md:justify-between"
             >
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xl font-semibold text-stone-950 dark:text-stone-100">
+                  <span className="text-xl font-semibold text-stone-950 dark:text-zinc-100">
                     {opportunity.name}
                   </span>
-                  <span className="rounded-md border border-stone-200 bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
+                  <span className="rounded-md border border-stone-200 bg-stone-100 px-2 py-0.5 text-xs font-medium text-stone-700 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200">
                     {opportunity.kind}
                   </span>
-                  <span className="text-sm text-stone-500 dark:text-stone-400">
+                  <span className="text-sm text-stone-500 dark:text-zinc-400">
                     {opportunity.stage} • {opportunity.probability}% probability
                   </span>
                 </div>
               </div>
-              <div className="text-xl font-semibold text-stone-950 dark:text-stone-100">
+              <div className="text-xl font-semibold text-stone-950 dark:text-zinc-100">
                 {formatCurrency(opportunity.value)}
               </div>
             </Link>
