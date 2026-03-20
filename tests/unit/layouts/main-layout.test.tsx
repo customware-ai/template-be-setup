@@ -84,7 +84,13 @@ describe("main layout", () => {
     const router = createLayoutRouter(["/"]);
     render(<RouterProvider router={router} />);
 
-    expect(await screen.findByText("Customware CPQ")).toBeInTheDocument();
+    const logoMark = await screen.findByText("CW");
+
+    expect(logoMark).toBeInTheDocument();
+    expect(logoMark).toHaveClass("rounded-xl", "px-2.5", "py-2");
+    expect(logoMark).not.toHaveClass("border");
+    expect(screen.queryByText("Customware CPQ")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: "Workspace" })).toHaveLength(2);
     expect(screen.getByText("Workflow")).toBeInTheDocument();
     expect(screen.getByText("0 of 4 steps")).toBeInTheDocument();
     expect(screen.getByText("0%")).toBeInTheDocument();

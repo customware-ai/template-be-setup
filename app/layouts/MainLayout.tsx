@@ -1,5 +1,5 @@
 import { useEffect, type ReactElement } from "react";
-import { Link, Outlet } from "react-router";
+import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { CircleHelp, Moon, RotateCcw, Sun, UserRound } from "lucide-react";
 import { WorkflowRail } from "~/components/cpq/WorkflowRail";
 import { Button } from "~/components/ui/Button";
@@ -19,12 +19,20 @@ import {
   SheetTrigger,
 } from "~/components/ui/Sheet";
 import { getCurrentWorkflowStep, type UserRole } from "~/lib/cpq-data";
+import { cn } from "~/lib/utils";
 import { useCpqWorkspaceStorage } from "~/utils/cpq-storage";
+
+interface NavigationItem {
+  label: string;
+  href: string;
+  matches: (pathname: string) => boolean;
+}
 
 /**
  * Renders the sidebar-aware shell inside the shared shadcn sidebar provider.
  */
 function MainLayoutShell(): ReactElement {
+  const location = useLocation();
   const {
     workspace,
     resetWorkspace,
@@ -33,6 +41,16 @@ function MainLayoutShell(): ReactElement {
     toggleThemeMode,
   } = useCpqWorkspaceStorage();
   const currentWorkflowStep = getCurrentWorkflowStep(workspace);
+
+  // Keep a single shell nav model in one place so future routes can attach to
+  // the shared desktop and mobile header patterns without duplicating logic.
+  const navigationItems: NavigationItem[] = [
+    {
+      label: "Workspace",
+      href: "/",
+      matches: (pathname: string): boolean => pathname === "/",
+    },
+  ];
 
   /**
    * The shell owns the document theme because the browser bootstrap script only
@@ -62,17 +80,30 @@ function MainLayoutShell(): ReactElement {
 
             <Link
               to="/"
-              className="flex min-w-0 items-center gap-3 text-stone-900 dark:text-zinc-100"
+              className="flex min-w-0 items-center text-stone-900 dark:text-zinc-100"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-md border border-stone-300 bg-stone-100 text-xs font-semibold dark:border-zinc-700 dark:bg-zinc-900">
+              <div className="flex items-center justify-center rounded-xl bg-stone-100 px-2.5 py-2 text-sm font-semibold leading-none tracking-[-0.08em] dark:bg-zinc-900">
                 CW
               </div>
-              <div className="min-w-0">
-                <div className="truncate text-sm font-semibold">
-                  Customware CPQ
-                </div>
-              </div>
             </Link>
+
+            <nav className="ml-2 hidden items-center gap-1 md:flex">
+              {navigationItems.map((item) => (
+                <NavLink
+                  key={item.href}
+                  to={item.href}
+                  className={({ isActive }): string =>
+                    cn(
+                      "rounded-md px-3 py-2 text-sm font-medium text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
+                      (isActive || item.matches(location.pathname)) &&
+                        "bg-stone-100 text-stone-900 dark:bg-zinc-900 dark:text-zinc-100",
+                    )
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
+            </nav>
 
             <div className="ml-auto flex items-center gap-2">
               <Sheet>
@@ -188,6 +219,26 @@ function MainLayoutShell(): ReactElement {
                   </div>
                 </SheetContent>
               </Sheet>
+            </div>
+          </div>
+
+          <div className="border-t border-stone-200 bg-stone-50 px-4 py-2 md:hidden dark:border-zinc-800 dark:bg-zinc-950">
+            <div className="flex items-center gap-2 overflow-x-auto">
+              {navigationItems.map((item) => (
+                <NavLink
+                  key={item.href}
+                  to={item.href}
+                  className={({ isActive }): string =>
+                    cn(
+                      "whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-stone-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100",
+                      (isActive || item.matches(location.pathname)) &&
+                        "bg-stone-100 text-stone-900 dark:bg-zinc-900 dark:text-zinc-100",
+                    )
+                  }
+                >
+                  {item.label}
+                </NavLink>
+              ))}
             </div>
           </div>
         </header>

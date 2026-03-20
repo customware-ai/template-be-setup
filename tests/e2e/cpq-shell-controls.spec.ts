@@ -10,8 +10,42 @@ test.describe("workflow starter shell e2e", () => {
     await seedWorkspace(page);
     await page.reload();
 
+    await expect(page.getByText("Customware CPQ", { exact: true })).toHaveCount(0);
+    const logoMark = page.locator("header").getByText("CW", { exact: true }).first();
+
+    await expect(logoMark).toBeVisible();
+    await expect(page.getByRole("link", { name: "Workspace" }).first()).toBeVisible();
     await expect(page.locator('[aria-label="Workflow"]').first()).toBeVisible();
     await expect(page.getByText("0 of 4 steps")).toBeVisible();
+
+    const logoStyles = await logoMark.evaluate((node) => {
+      const mark =
+        node instanceof HTMLElement ? node : node.parentElement instanceof HTMLElement ? node.parentElement : null;
+
+      if (!mark) {
+        return null;
+      }
+
+      const styles = getComputedStyle(mark);
+
+      return {
+        borderTopWidth: styles.borderTopWidth,
+        paddingLeft: styles.paddingLeft,
+        paddingRight: styles.paddingRight,
+        paddingTop: styles.paddingTop,
+        paddingBottom: styles.paddingBottom,
+        borderRadius: styles.borderRadius,
+      };
+    });
+
+    expect(logoStyles).toEqual({
+      borderTopWidth: "0px",
+      paddingLeft: "10px",
+      paddingRight: "10px",
+      paddingTop: "8px",
+      paddingBottom: "8px",
+      borderRadius: "12px",
+    });
 
     const sectionToggle = page
       .getByRole("button", { name: /Pre-Configuration/i })
@@ -147,6 +181,7 @@ test.describe("workflow starter shell e2e", () => {
     await seedWorkspace(page);
     await page.reload();
 
+    await expect(page.getByRole("link", { name: "Workspace" })).toBeVisible();
     await page.getByRole("button", { name: "Toggle workflow sidebar" }).click();
 
     const sidebarDialog = page.getByRole("dialog", { name: "Sidebar" });
