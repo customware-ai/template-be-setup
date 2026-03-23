@@ -593,7 +593,7 @@ export default function WorkflowStepPage(): ReactElement {
         </div>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] 2xl:gap-6 2xl:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px] 2xl:gap-6 2xl:grid-cols-[minmax(0,1fr)_360px]">
         <section className="rounded-lg border border-stone-200 bg-card dark:border-zinc-800">
           <div className="border-b border-stone-200 px-5 py-4 dark:border-zinc-800">
             <div className="text-sm font-medium text-stone-950 dark:text-zinc-100">

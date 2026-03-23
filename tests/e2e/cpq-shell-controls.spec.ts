@@ -19,6 +19,24 @@ test.describe("workflow starter shell e2e", () => {
     await expect(page.getByText("0 of 3 steps")).toBeVisible();
     await expect(page).toHaveURL(/\/workflow\/customer-collection$/);
 
+    const customerFooterGap = await page.evaluate(() => {
+      const section = document
+        .querySelector('[data-testid="workflow-step-footer"]')
+        ?.closest("section");
+      const footer = document.querySelector('[data-testid="workflow-step-footer"]');
+
+      if (!(section instanceof HTMLElement) || !(footer instanceof HTMLElement)) {
+        return null;
+      }
+
+      const sectionRect = section.getBoundingClientRect();
+      const footerRect = footer.getBoundingClientRect();
+
+      return Math.round(sectionRect.bottom - footerRect.bottom);
+    });
+
+    expect(customerFooterGap).toBeLessThanOrEqual(2);
+
     const logoStyles = await logoMark.evaluate((node) => {
       const mark =
         node instanceof HTMLElement ? node : node.parentElement instanceof HTMLElement ? node.parentElement : null;

@@ -1,6 +1,12 @@
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import path from "node:path";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { eq } from "drizzle-orm";
-import { getDatabase } from "../../../server/db/index.js";
+import {
+  getDatabase,
+  resetDatabaseConnection,
+} from "../../../server/db/index.js";
 import { runMigrations } from "../../../server/db/migrate.js";
 import { estimates } from "../../../server/db/schemas.js";
 import {
@@ -8,10 +14,27 @@ import {
   listEstimates,
 } from "../../../server/services/estimate.js";
 
+let testDatabaseDirectoryPath = "";
+
+/**
+ * Creates an isolated sqlite file for the estimate service tests.
+ */
+function configureEstimateTestDatabase(): void {
+  testDatabaseDirectoryPath = mkdtempSync(
+    path.join(tmpdir(), "estimate-service-test-"),
+  );
+  process.env.E2E_DATABASE_FILE_PATH = path.join(
+    testDatabaseDirectoryPath,
+    "estimate-service.db",
+  );
+  resetDatabaseConnection();
+}
+
 /**
  * Ensures the template schema exists before service tests execute.
  */
 beforeAll(async () => {
+  configureEstimateTestDatabase();
   await runMigrations();
 });
 
@@ -21,6 +44,18 @@ beforeAll(async () => {
 beforeEach(async () => {
   const db = getDatabase();
   await db.delete(estimates);
+});
+
+/**
+ * Releases the shared sqlite connection and removes the temporary database.
+ */
+afterAll(() => {
+  resetDatabaseConnection();
+  delete process.env.E2E_DATABASE_FILE_PATH;
+
+  if (testDatabaseDirectoryPath.length > 0) {
+    rmSync(testDatabaseDirectoryPath, { recursive: true, force: true });
+  }
 });
 
 describe("estimate service example", () => {

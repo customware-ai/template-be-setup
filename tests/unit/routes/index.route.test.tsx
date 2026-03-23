@@ -77,6 +77,7 @@ describe("starter workflow routes", () => {
     const pageGrid = screen.getByRole("heading", { name: "Quote Identity" }).closest("div.space-y-5");
 
     expect(pageGrid?.querySelector(".grid.gap-5")).toHaveClass(
+      "items-start",
       "xl:grid-cols-[minmax(0,1fr)_320px]",
       "2xl:grid-cols-[minmax(0,1fr)_360px]",
     );

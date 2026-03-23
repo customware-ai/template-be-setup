@@ -26,9 +26,11 @@ function resolveDatabaseFilePath(): string {
 }
 
 /**
- * Absolute database path for the local sqlite file.
+ * Returns the active sqlite file path for the current process environment.
  */
-export const DATABASE_FILE_PATH = resolveDatabaseFilePath();
+export function getDatabaseFilePath(): string {
+  return resolveDatabaseFilePath();
+}
 
 let sqlite: BetterSqliteDatabase | null = null;
 let db: DatabaseClient | null = null;
@@ -36,8 +38,8 @@ let db: DatabaseClient | null = null;
 /**
  * Ensures the local database directory exists before opening sqlite.
  */
-function ensureDatabaseDirectory(): void {
-  const directory = path.dirname(DATABASE_FILE_PATH);
+function ensureDatabaseDirectory(databaseFilePath: string): void {
+  const directory = path.dirname(databaseFilePath);
   if (!existsSync(directory)) {
     mkdirSync(directory, { recursive: true });
   }
@@ -51,9 +53,10 @@ export function initializeDatabase(): DatabaseClient {
     return db;
   }
 
-  ensureDatabaseDirectory();
+  const databaseFilePath = getDatabaseFilePath();
+  ensureDatabaseDirectory(databaseFilePath);
 
-  sqlite = new BetterSqlite3(DATABASE_FILE_PATH);
+  sqlite = new BetterSqlite3(databaseFilePath);
   sqlite.pragma("foreign_keys = ON");
   db = drizzle(sqlite, { schema });
 
@@ -69,4 +72,13 @@ export function getDatabase(): DatabaseClient {
   }
 
   return db;
+}
+
+/**
+ * Closes the shared sqlite handle so tests can swap database files safely.
+ */
+export function resetDatabaseConnection(): void {
+  sqlite?.close();
+  sqlite = null;
+  db = null;
 }

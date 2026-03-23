@@ -182,8 +182,8 @@ npx vitest run tests/unit/db/db.test.ts
 
 **Framework/runtime dependencies (current):**
 
-- `react-router@7.13.0` + `@react-router/dev@7.13.0` + `@react-router/node@^7.13.0`
-- `vite@8.0.0-beta.13` (with override pinned), `@vitejs/plugin-react@5.1.4`
+- `react-router@7.13.2` + `@react-router/dev@7.13.2` + `@react-router/node@7.13.2`
+- `vite@8.0.0` (with override pinned), `@vitejs/plugin-react@6.0.0`
 - `hono@^4.12.1`, `@hono/node-server@^1.19.9`, `@hono/trpc-server@^0.4.2`
 - `@trpc/server@^11.10.0`, `@trpc/client@^11.10.0`, `@trpc/react-query@^11.10.0`
 - `@tanstack/react-query@^5.90.21`
@@ -196,7 +196,7 @@ npx vitest run tests/unit/db/db.test.ts
 - `vitest@4.0.18`, `@testing-library/react@16.3.0`, `@testing-library/user-event@14.6.1`
 - `oxlint@1.47.0`, `oxlint-tsgolint@latest`
 - `drizzle-kit@^0.31.9`
-- `typescript@5.9.3`, `tsx@4.21.0`, `concurrently@^9.2.1`
+- `typescript@6.0.2`, `tsx@4.21.0`
 
 ## Architecture
 
