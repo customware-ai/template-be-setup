@@ -239,6 +239,11 @@ export type StarterPreConfiguration = z.infer<typeof StarterPreConfigurationSche
 export type CpqWorkspace = z.infer<typeof CpqWorkspaceSchema>;
 export type WorkflowStepMeta = WorkflowEngineStepMeta<WorkflowStepDefinition>;
 
+const ESTIMATE_MODIFIER_VALUES: Record<"expedited" | "freight", number> = {
+  expedited: 0.15,
+  freight: 150,
+};
+
 /**
  * Materialized line item used by the estimate workspace and build panel.
  */
