@@ -21,8 +21,11 @@ describe('Card', () => {
       render(<Card data-testid="card">Content</Card>);
       const card = screen.getByTestId('card');
       expect(card.className).toContain('rounded-xl');
-      expect(card.className).toContain('border');
+      expect(card.className).toContain('border-0');
       expect(card.className).toContain('bg-card');
+      expect(card.className).toContain('ring-1');
+      expect(card.className).toContain('ring-stone-200/80');
+      expect(card.className).toContain('shadow-xs');
     });
   });
 

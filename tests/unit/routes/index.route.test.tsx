@@ -9,10 +9,6 @@ import {
   seedCpqWorkspaceInStorage,
 } from "../../../app/utils/cpq-storage";
 
-/**
- * Builds the route tree needed to exercise the redirecting index route and the
- * route-backed workflow step engine.
- */
 function createWorkflowRouter(
   initialEntries: string[],
 ): ReturnType<typeof createMemoryRouter> {
@@ -25,88 +21,76 @@ function createWorkflowRouter(
   );
 }
 
-describe("example workflow routes", () => {
+describe("workflow routes", () => {
   beforeEach(() => {
     clearCpqWorkspaceFromStorage();
     seedCpqWorkspaceInStorage();
   });
 
-  it("redirects the root route to the active workflow step page", async () => {
+  it("redirects the root route to the first workflow step page", async () => {
     const router = createWorkflowRouter(["/"]);
     render(<RouterProvider router={router} />);
 
     expect(
-      await screen.findByRole("heading", { name: "Customer & Collection" }),
+      await screen.findByRole("heading", { name: "Primary Details" }),
     ).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe("/workflow/customer-collection");
+    expect(router.state.location.pathname).toBe("/workflow/step-1");
   });
 
-  it("progresses through the route-backed example workflow and completes it", async () => {
-    const router = createWorkflowRouter(["/workflow/customer-collection"]);
+  it("advances through the neutral two-step workflow", async () => {
+    const user = userEvent.setup();
+    const router = createWorkflowRouter(["/workflow/step-1"]);
     render(<RouterProvider router={router} />);
 
-    await userEvent.type(
-      await screen.findByRole("textbox", { name: "Customer" }),
-      "BarkBilt",
+    await user.type(
+      await screen.findByRole("textbox", { name: "Primary label" }),
+      "Workspace",
     );
-    await userEvent.type(
-      screen.getByRole("textbox", { name: "Collection" }),
-      "Industrial Hoists",
+    await user.type(
+      screen.getByRole("textbox", { name: "Secondary label" }),
+      "Context",
     );
-    await userEvent.click(
-      screen.getByRole("button", { name: "Continue to Quote Identity" }),
+    await user.click(
+      screen.getByRole("button", { name: "Continue to Reference Details" }),
     );
 
     expect(
-      await screen.findByRole("heading", { name: "Quote Identity" }),
+      await screen.findByRole("heading", { name: "Reference Details" }),
     ).toBeInTheDocument();
-    expect(screen.getByTestId("workflow-step-footer")).toHaveClass(
-      "xl:grid",
-      "xl:grid-cols-[minmax(0,1fr)_auto]",
-    );
-    expect(screen.getByTestId("workflow-step-footer-actions")).toHaveClass(
-      "2xl:min-w-[320px]",
-    );
-    expect(screen.getByTestId("workflow-step-footer-actions")).toHaveClass(
-      "xl:justify-center",
-      "xl:min-w-[280px]",
-    );
-    expect(
-      screen.getByRole("button", { name: "Continue to Scope Review" }),
-    ).toHaveClass("w-full", "sm:w-auto", "xl:min-w-[240px]", "2xl:min-w-[256px]");
-    const pageGrid = screen.getByRole("heading", { name: "Quote Identity" }).closest("div.space-y-5");
 
-    expect(pageGrid?.querySelector(".grid.gap-5")).toHaveClass(
-      "items-start",
-      "xl:grid-cols-[minmax(0,1fr)_320px]",
-      "2xl:grid-cols-[minmax(0,1fr)_360px]",
-    );
-
-    await userEvent.type(
-      screen.getByRole("textbox", { name: "Quote Year" }),
+    await user.type(
+      screen.getByRole("textbox", { name: "Reference year" }),
       "2026",
     );
-    await userEvent.type(screen.getByRole("textbox", { name: "Sequence" }), "014");
-    await userEvent.type(
-      screen.getByRole("textbox", { name: "Item Name" }),
-      "Under Running Crane",
+    await user.type(screen.getByRole("textbox", { name: "Sequence" }), "014");
+    await user.type(
+      screen.getByRole("textbox", { name: "Item label" }),
+      "Configured Item",
     );
-    await userEvent.click(
-      screen.getByRole("button", { name: "Continue to Scope Review" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Complete workflow" }));
 
-    expect(
-      await screen.findByRole("heading", { name: "Scope Review" }),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Workflow complete.")).toBeInTheDocument();
+    expect(screen.getByText("$28,500.00")).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/workflow/step-2");
+  });
 
-    await userEvent.click(screen.getByRole("button", { name: "Load package" }));
-    expect(screen.getAllByText("BarkBilt").length).toBeGreaterThan(0);
-    expect(screen.getByText("EST-2026-014")).toBeInTheDocument();
+  it("keeps the rounded workflow card treatment from the original shell", async () => {
+    const router = createWorkflowRouter(["/workflow/step-1"]);
+    render(<RouterProvider router={router} />);
 
-    await userEvent.click(screen.getByRole("button", { name: "Complete workflow" }));
+    await screen.findByRole("heading", { name: "Primary Details" });
 
-    expect(await screen.findByText("Example workflow complete.")).toBeInTheDocument();
-    expect(screen.getByText("3 / 3")).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe("/workflow/scope-review");
+    expect(screen.getByTestId("workflow-primary-card")).toHaveClass("rounded-xl");
+    expect(screen.getByTestId("workflow-primary-card")).toHaveClass("border-0");
+    expect(screen.getByTestId("workflow-primary-card")).toHaveClass("ring-1");
+    expect(screen.getByTestId("workflow-primary-card")).toHaveClass("shadow-xs");
+    expect(screen.getByTestId("workflow-summary-card")).toHaveClass("rounded-xl");
+    expect(screen.getByTestId("workflow-summary-card")).toHaveClass("border-0");
+    expect(screen.getByTestId("workflow-summary-card")).toHaveClass("ring-1");
+    expect(screen.getByTestId("workflow-summary-card")).toHaveClass("shadow-xs");
+    expect(screen.getByTestId("workflow-status-card")).toHaveClass("rounded-xl");
+    expect(screen.getByTestId("workflow-status-card")).toHaveClass("border-0");
+    expect(screen.getByTestId("workflow-status-card")).toHaveClass("ring-1");
+    expect(screen.getByTestId("workflow-status-card")).toHaveClass("shadow-xs");
   });
 });

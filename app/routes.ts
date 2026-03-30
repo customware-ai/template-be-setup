@@ -1,7 +1,7 @@
 /**
  * Route Configuration
  *
- * Simplified SPA routes for the single-page workflow starter.
+ * Simplified SPA routes for the single-page workflow shell.
  */
 
 import {

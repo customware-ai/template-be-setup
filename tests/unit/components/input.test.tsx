@@ -117,6 +117,10 @@ describe('Input', () => {
       const input = screen.getByTestId('input');
       expect(input.className).toContain('w-full');
       expect(input.className).toContain('rounded-md');
+      expect(input.className).toContain('border-0');
+      expect(input.className).toContain('ring-1');
+      expect(input.className).toContain('ring-stone-200/80');
+      expect(input.className).toContain('shadow-xs');
     });
   });
 });
@@ -168,6 +172,10 @@ describe('Textarea', () => {
       const textarea = screen.getByTestId('textarea');
       expect(textarea.className).toContain('min-h-');
       expect(textarea.className).toContain('resize-y');
+      expect(textarea.className).toContain('border-0');
+      expect(textarea.className).toContain('ring-1');
+      expect(textarea.className).toContain('ring-stone-200/80');
+      expect(textarea.className).toContain('shadow-xs');
     });
   });
 });

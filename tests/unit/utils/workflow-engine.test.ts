@@ -17,37 +17,22 @@ interface TestWorkflowStep {
 }
 
 interface TestWorkflowStage extends WorkflowStageDefinition<TestWorkflowStep> {
-  icon_key: "capture" | "proposal";
+  icon_key: "capture";
 }
 
-/**
- * Simple fixture that proves the engine only needs ordered workflow data plus a
- * runtime position. No local storage or CPQ workspace object is required.
- */
 const TEST_WORKFLOW_STAGES: TestWorkflowStage[] = [
   {
-    id: "capture",
-    title: "Capture",
+    id: "pre-configuration",
+    title: "Pre-Configuration",
     icon_key: "capture",
     steps: [
       {
-        id: "customer",
-        label: "Customer",
+        id: "step-1",
+        label: "Primary Details",
       },
       {
-        id: "quote",
-        label: "Quote",
-      },
-    ],
-  },
-  {
-    id: "review",
-    title: "Review",
-    icon_key: "proposal",
-    steps: [
-      {
-        id: "scope",
-        label: "Scope",
+        id: "step-2",
+        label: "Reference Details",
       },
     ],
   },
@@ -56,7 +41,7 @@ const TEST_WORKFLOW_STAGES: TestWorkflowStage[] = [
 describe("workflow-engine", () => {
   it("derives workflow sections and step states from plain workflow data", () => {
     const runtimeState: WorkflowRuntimeState = {
-      activeStepId: "quote",
+      activeStepId: "step-2",
       workflowCompleted: false,
     };
 
@@ -65,9 +50,9 @@ describe("workflow-engine", () => {
       runtimeState,
     );
 
-    expect(getFirstWorkflowStepId(TEST_WORKFLOW_STAGES)).toBe("customer");
+    expect(getFirstWorkflowStepId(TEST_WORKFLOW_STAGES)).toBe("step-1");
     expect(resolvedStages[0]).toMatchObject({
-      id: "capture",
+      id: "pre-configuration",
       icon_key: "capture",
       summary: "Step 2 of 2",
       state: "current",
@@ -76,60 +61,46 @@ describe("workflow-engine", () => {
       "complete",
       "current",
     ]);
-    expect(resolvedStages[1]).toMatchObject({
-      id: "review",
-      icon_key: "proposal",
-      summary: "Upcoming",
-      state: "upcoming",
-    });
   });
 
-  it("advances across stages and marks the workflow complete on the final step", () => {
+  it("advances within the stage and marks the workflow complete on the final step", () => {
     let runtimeState: WorkflowRuntimeState = {
-      activeStepId: "customer",
+      activeStepId: "step-1",
       workflowCompleted: false,
     };
 
     runtimeState = advanceWorkflow(TEST_WORKFLOW_STAGES, runtimeState);
     expect(runtimeState).toEqual({
-      activeStepId: "quote",
+      activeStepId: "step-2",
       workflowCompleted: false,
     });
     expect(
       getCurrentWorkflowStepMeta(TEST_WORKFLOW_STAGES, runtimeState)?.stepLabel,
-    ).toBe("Quote");
+    ).toBe("Reference Details");
+    expect(getNextWorkflowStepMeta(TEST_WORKFLOW_STAGES, runtimeState)).toBeNull();
 
     runtimeState = advanceWorkflow(TEST_WORKFLOW_STAGES, runtimeState);
     expect(runtimeState).toEqual({
-      activeStepId: "scope",
-      workflowCompleted: false,
-    });
-    expect(
-      getNextWorkflowStepMeta(TEST_WORKFLOW_STAGES, runtimeState),
-    ).toBeNull();
-
-    runtimeState = advanceWorkflow(TEST_WORKFLOW_STAGES, runtimeState);
-    expect(runtimeState).toEqual({
-      activeStepId: "scope",
+      activeStepId: "step-2",
       workflowCompleted: true,
     });
     expect(getWorkflowProgress(TEST_WORKFLOW_STAGES, runtimeState)).toEqual({
-      completeSteps: 3,
-      totalSteps: 3,
+      completeSteps: 2,
+      totalSteps: 2,
       percent: 100,
     });
   });
 
   it("clears completion when selecting a valid step and ignores unknown steps", () => {
     const completedState: WorkflowRuntimeState = {
-      activeStepId: "scope",
+      activeStepId: "step-2",
       workflowCompleted: true,
     };
 
     expect(
-      setActiveWorkflowStep(TEST_WORKFLOW_STAGES, completedState, "quote"),
+      setActiveWorkflowStep(TEST_WORKFLOW_STAGES, completedState, "step-1"),
     ).toEqual({
-      activeStepId: "quote",
+      activeStepId: "step-1",
       workflowCompleted: false,
     });
     expect(

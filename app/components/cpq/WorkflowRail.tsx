@@ -1,4 +1,3 @@
-// THIS COMPONENT RENDERS MOCK SAMPLE WORKFLOW NAVIGATION ONLY. REMOVE IT AND RE-ADD THE REAL REQUEST UI WHEN NEEDED.
 import { useEffect, useState, type ReactElement } from "react";
 import { useNavigate } from "react-router";
 import {
@@ -108,7 +107,7 @@ export function WorkflowRail({
 
   /**
    * Keep the current section expanded as workflow data changes while dropping
-   * ids that no longer exist in the example process definition.
+   * ids that no longer exist in the current workflow definition.
    */
   useEffect((): void => {
     setExpandedSectionIds((currentExpandedSectionIds) => {
@@ -155,7 +154,7 @@ export function WorkflowRail({
   };
 
   /**
-   * Sections expand and collapse locally so the starter demonstrates structure
+   * Sections expand and collapse locally so the shell demonstrates structure
    * without implying a required route-per-step template.
    */
   const toggleSection = (sectionId: string): void => {
@@ -295,7 +294,6 @@ export function WorkflowRail({
       </div>
 
       <div className="border-t border-stone-200 px-4 py-4 dark:border-zinc-800">
-        {/* THIS SIDEBAR DATA IS MOCKED SAMPLE DATA ONLY. REMOVE IT AND RE-ADD THE REAL REQUEST STATE WHEN NEEDED. */}
         <div className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
           Workspace Role
         </div>

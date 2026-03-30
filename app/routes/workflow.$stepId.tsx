@@ -1,23 +1,18 @@
-// THIS ROUTE RENDERS MOCK SAMPLE WORKFLOW UI ONLY. REMOVE IT AND RE-ADD THE REAL REQUEST FLOW WHEN NEEDED.
 import { useEffect, type ChangeEvent, type ReactElement } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
-import { Minus, Package2, Plus, ShieldCheck } from "lucide-react";
 import { Button } from "~/components/ui/Button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Input } from "~/components/ui/Input";
 import { Skeleton } from "~/components/ui/Skeleton";
 import {
   canEditWorkspace,
-  canViewPricing,
-  formatPriceVisibility,
-  formatStarterQuoteCode,
-  getEstimateById,
-  getEstimateLineItems,
+  formatCurrency,
+  formatStarterReferenceCode,
   getEstimateTotals,
   getNextWorkflowStep,
   getWorkflowProgress,
   getWorkflowStepMetaById,
   isWorkflowComplete,
-  type EstimateLineItem,
   type StarterPreConfiguration,
 } from "~/lib/cpq-data";
 import { useCpqWorkspaceStorage } from "~/utils/cpq-storage";
@@ -27,84 +22,56 @@ interface StepContent {
   description: string;
 }
 
-/**
- * Builds the shared route path for workflow step pages.
- */
+const workflowPanelClassName = "gap-0";
+
 function getWorkflowStepPath(stepId: string): string {
   return `/workflow/${stepId}`;
 }
 
-/**
- * Keeps the page copy tied to the route-driven step engine instead of a
- * single static example surface.
- */
 function getStepContent(stepId: string): StepContent {
-  // THIS ROUTE RENDERS MOCK SAMPLE COPY ONLY. REMOVE IT AND RE-ADD THE REAL REQUEST FLOW WHEN NEEDED.
   switch (stepId) {
-    case "customer-collection":
+    case "step-2":
       return {
-        title: "Customer & Collection",
-        description:
-          "Capture the customer name and commercial collection before the quote moves forward.",
+        title: "Reference Details",
+        description: "Capture the reference values before the workflow is finalized.",
       };
-    case "quote-identity":
-      return {
-        title: "Quote Identity",
-        description:
-          "Set the quote year, sequence, and item label that will identify this example quote.",
-      };
-    case "scope-review":
-      return {
-        title: "Scope Review",
-        description:
-          "Load the example package or add the compliance line so the quote has real commercial scope.",
-      };
+    case "step-1":
     default:
       return {
-        title: "Customer & Collection",
-        description:
-          "Capture the customer name and commercial collection before the quote moves forward.",
+        title: "Primary Details",
+        description: "Capture the first labels before the workflow moves forward.",
       };
   }
 }
 
-/**
- * Validates whether the current step has enough example data to proceed.
- */
 function isStepReady(
   stepId: string,
   starterPreConfiguration: StarterPreConfiguration,
-  lineItems: EstimateLineItem[],
 ): boolean {
   switch (stepId) {
-    case "customer-collection":
+    case "step-1":
       return (
-        starterPreConfiguration.customer_name.trim().length > 0 &&
-        starterPreConfiguration.collection_name.trim().length > 0
+        starterPreConfiguration.primary_label.trim().length > 0 &&
+        starterPreConfiguration.secondary_label.trim().length > 0
       );
-    case "quote-identity":
+    case "step-2":
       return (
-        starterPreConfiguration.quote_year.trim().length > 0 &&
-        starterPreConfiguration.sequence_code.trim().length > 0 &&
-        starterPreConfiguration.item_name.trim().length > 0
+        starterPreConfiguration.reference_year.trim().length > 0 &&
+        starterPreConfiguration.reference_sequence.trim().length > 0 &&
+        starterPreConfiguration.item_label.trim().length > 0
       );
-    case "scope-review":
-      return lineItems.length > 0;
     default:
       return false;
   }
 }
 
-/**
- * Explains what the current step still needs before the workflow can advance.
- */
 function getStepReadinessMessage(
   stepId: string,
   ready: boolean,
   workflowCompleted: boolean,
 ): string {
   if (workflowCompleted) {
-    return "This example workflow is complete.";
+    return "This workflow is complete.";
   }
 
   if (ready) {
@@ -112,21 +79,16 @@ function getStepReadinessMessage(
   }
 
   switch (stepId) {
-    case "customer-collection":
-      return "Enter both the customer name and collection.";
-    case "quote-identity":
-      return "Enter the quote year, sequence, and item name.";
-    case "scope-review":
-      return "Add at least one example line before proceeding.";
+    case "step-1":
+      return "Enter both labels.";
+    case "step-2":
+      return "Enter the reference year, sequence, and item label.";
     default:
       return "Complete the current step before proceeding.";
   }
 }
 
-/**
- * Renders the first-step customer and collection inputs.
- */
-function renderCustomerCollectionStep(
+function renderStepOne(
   starterPreConfiguration: StarterPreConfiguration,
   isEditable: boolean,
   onStarterFieldChange: (
@@ -137,32 +99,29 @@ function renderCustomerCollectionStep(
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <Input
-        label="Customer"
-        value={starterPreConfiguration.customer_name}
-        placeholder="DR Inc"
+        label="Primary label"
+        value={starterPreConfiguration.primary_label}
+        placeholder="Workspace"
         className="h-10 text-sm"
         disabled={!isEditable}
-        onChange={(event) => onStarterFieldChange("customer_name", event)}
+        onChange={(event) => onStarterFieldChange("primary_label", event)}
       />
 
       <Input
-        label="Collection"
-        value={starterPreConfiguration.collection_name}
-        placeholder="Custom Hoist Line"
+        label="Secondary label"
+        value={starterPreConfiguration.secondary_label}
+        placeholder="Context"
         className="h-10 text-sm"
         disabled={!isEditable}
-        onChange={(event) => onStarterFieldChange("collection_name", event)}
+        onChange={(event) => onStarterFieldChange("secondary_label", event)}
       />
     </div>
   );
 }
 
-/**
- * Renders the quote identity inputs that define the example quote code.
- */
-function renderQuoteIdentityStep(
+function renderStepTwo(
   starterPreConfiguration: StarterPreConfiguration,
-  starterQuoteCode: string,
+  referenceCode: string,
   isEditable: boolean,
   onStarterFieldChange: (
     field: keyof StarterPreConfiguration,
@@ -173,194 +132,45 @@ function renderQuoteIdentityStep(
     <div className="space-y-5">
       <div className="grid gap-4 md:grid-cols-3">
         <Input
-          label="Quote Year"
-          value={starterPreConfiguration.quote_year}
+          label="Reference year"
+          value={starterPreConfiguration.reference_year}
           placeholder="2026"
           className="h-10 text-sm"
           disabled={!isEditable}
-          onChange={(event) => onStarterFieldChange("quote_year", event)}
+          onChange={(event) => onStarterFieldChange("reference_year", event)}
         />
 
         <Input
           label="Sequence"
-          value={starterPreConfiguration.sequence_code}
+          value={starterPreConfiguration.reference_sequence}
           placeholder="001"
           className="h-10 text-sm"
           disabled={!isEditable}
-          onChange={(event) => onStarterFieldChange("sequence_code", event)}
+          onChange={(event) => onStarterFieldChange("reference_sequence", event)}
         />
 
         <Input
-          label="Item Name"
-          value={starterPreConfiguration.item_name}
-          placeholder="Under Running Crane"
+          label="Item label"
+          value={starterPreConfiguration.item_label}
+          placeholder="Configured Item"
           className="h-10 text-sm"
           disabled={!isEditable}
-          onChange={(event) => onStarterFieldChange("item_name", event)}
+          onChange={(event) => onStarterFieldChange("item_label", event)}
         />
       </div>
 
-      <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-lg bg-stone-50 px-4 py-3 text-sm ring-1 ring-stone-200/80 dark:bg-zinc-900 dark:ring-zinc-800/80">
         <div className="text-xs text-stone-500 dark:text-zinc-400">
-          Generated quote code
+          Generated reference
         </div>
         <div className="mt-1 font-semibold text-stone-950 dark:text-zinc-100">
-          {starterQuoteCode}
+          {referenceCode}
         </div>
       </div>
     </div>
   );
 }
 
-/**
- * Renders the example scope action rows and current line items.
- */
-function renderStarterScopeStep(
-  isEditable: boolean,
-  starterPackageName: string,
-  starterPackageDescription: string,
-  complianceAddOnName: string,
-  complianceAddOnDescription: string,
-  starterPackageLoaded: boolean,
-  complianceAddOnLoaded: boolean,
-  lineItems: EstimateLineItem[],
-  onLoadStarterPackage: () => void,
-  onLoadComplianceAddOn: () => void,
-  onIncreaseQuantity: (lineItem: EstimateLineItem) => void,
-  onDecreaseQuantity: (lineItem: EstimateLineItem) => void,
-  onRemoveLineItem: (lineItem: EstimateLineItem) => void,
-  canSeePricing: boolean,
-  role: Parameters<typeof formatPriceVisibility>[1],
-): ReactElement {
-  return (
-    <div className="space-y-5">
-      <div className="space-y-3">
-        <div className="rounded-lg border border-stone-200 bg-card px-4 py-4 dark:border-zinc-800">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="min-w-0">
-              <div className="text-sm font-medium text-stone-950 dark:text-zinc-100">
-                {starterPackageName}
-              </div>
-              <div className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
-                {starterPackageDescription}
-              </div>
-            </div>
-            <Button
-              variant={starterPackageLoaded ? "secondary" : "outline"}
-              disabled={!isEditable || starterPackageLoaded}
-              onClick={onLoadStarterPackage}
-            >
-              <Package2 className="h-4 w-4" />
-              <span>
-                {starterPackageLoaded ? "Loaded" : "Load package"}
-              </span>
-            </Button>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-stone-200 bg-card px-4 py-4 dark:border-zinc-800">
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="min-w-0">
-              <div className="text-sm font-medium text-stone-950 dark:text-zinc-100">
-                {complianceAddOnName}
-              </div>
-              <div className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
-                {complianceAddOnDescription}
-              </div>
-            </div>
-            <Button
-              variant={complianceAddOnLoaded ? "secondary" : "outline"}
-              disabled={!isEditable || complianceAddOnLoaded}
-              onClick={onLoadComplianceAddOn}
-            >
-              <ShieldCheck className="h-4 w-4" />
-              <span>
-                {complianceAddOnLoaded ? "Added" : "Add line"}
-              </span>
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-lg border border-stone-200 dark:border-zinc-800">
-        <div className="border-b border-stone-200 px-4 py-3 text-sm font-medium text-stone-950 dark:border-zinc-800 dark:text-zinc-100">
-          Quote scope
-        </div>
-
-        {lineItems.length === 0 ? (
-          <div className="px-4 py-6 text-sm text-stone-500 dark:text-zinc-400">
-            Load the package or add the compliance line to create example scope.
-          </div>
-        ) : (
-          <div className="divide-y divide-stone-200 dark:divide-zinc-800">
-            {lineItems.map((lineItem) => (
-              <div
-                key={lineItem.id}
-                className="space-y-3 px-4 py-4"
-              >
-                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div className="min-w-0">
-                    <div className="text-sm font-medium text-stone-950 dark:text-zinc-100">
-                      {lineItem.name}
-                    </div>
-                    <div className="mt-1 text-sm text-stone-500 dark:text-zinc-400">
-                      {lineItem.description}
-                    </div>
-                  </div>
-                  <div className="text-sm font-medium text-stone-950 dark:text-zinc-100">
-                    {canSeePricing
-                      ? formatPriceVisibility(lineItem.line_total, role)
-                      : "Hidden"}
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label={`Decrease quantity for ${lineItem.name}`}
-                    disabled={!isEditable || lineItem.quantity <= 1}
-                    onClick={() => onDecreaseQuantity(lineItem)}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-
-                  <div className="min-w-8 text-center text-sm font-medium text-stone-950 dark:text-zinc-100">
-                    {lineItem.quantity}
-                  </div>
-
-                  <Button
-                    variant="outline"
-                    size="icon-sm"
-                    aria-label={`Increase quantity for ${lineItem.name}`}
-                    disabled={!isEditable}
-                    onClick={() => onIncreaseQuantity(lineItem)}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={!isEditable}
-                    onClick={() => onRemoveLineItem(lineItem)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/**
- * Route-backed workflow step surface. Each step now has its own page while the
- * workflow definition still lives in shared local-first data.
- */
 export default function WorkflowStepPage(): ReactElement {
   const navigate = useNavigate();
   const params = useParams();
@@ -369,10 +179,6 @@ export default function WorkflowStepPage(): ReactElement {
     workspace,
     isHydrated,
     updateStarterPreConfigurationField,
-    addCatalogItem,
-    addPackage,
-    updateSelectionQuantity,
-    removeSelection,
     setActiveWorkflowStep,
     advanceWorkflow,
   } = useCpqWorkspaceStorage();
@@ -414,54 +220,21 @@ export default function WorkflowStepPage(): ReactElement {
   }
 
   const resolvedRouteStep = routeStep as NonNullable<typeof routeStep>;
-
-  const activeEstimate = getEstimateById(workspace, workspace.active_estimate_id);
   const starterPreConfiguration = workspace.starter_pre_configuration;
-  const lineItems = activeEstimate
-    ? getEstimateLineItems(workspace, activeEstimate.id)
-    : [];
-  const totals = activeEstimate
-    ? getEstimateTotals(workspace, activeEstimate.id)
-    : {
-        subtotal: 0,
-        packageSavings: 0,
-        modifiersTotal: 0,
-        total: 0,
-        marginPercent: 0,
-        itemCount: 0,
-      };
+  const referenceCode = formatStarterReferenceCode(starterPreConfiguration);
+  const isEditable = canEditWorkspace(workspace.ui.active_role);
+  const workflowCompleted = isWorkflowComplete(workspace);
+  const ready = isStepReady(routeStepId, starterPreConfiguration);
+  const nextStep = getNextWorkflowStep(workspace, routeStepId);
   const workflowProgress = getWorkflowProgress(workspace);
   const stepContent = getStepContent(routeStepId);
-  const nextStep = getNextWorkflowStep(workspace, routeStepId);
-  const workflowCompleted = isWorkflowComplete(workspace);
-  const starterQuoteCode = formatStarterQuoteCode(starterPreConfiguration);
-  const isEditable = canEditWorkspace(workspace.ui.active_role);
-  const canSeePricing = canViewPricing(workspace.ui.active_role);
-  const ready = isStepReady(routeStepId, starterPreConfiguration, lineItems);
+  const estimateTotals = getEstimateTotals(workspace, workspace.active_estimate_id);
   const readinessMessage = getStepReadinessMessage(
     routeStepId,
     ready,
     workflowCompleted,
   );
-  const starterPackage = workspace.packages[0] ?? null;
-  const complianceAddOn =
-    workspace.catalog.find((item) => item.id === "item-inspection-plan") ??
-    workspace.catalog[0] ??
-    null;
-  const starterPackageLoaded =
-    starterPackage !== null &&
-    lineItems.some((lineItem) => lineItem.package_id === starterPackage.id);
-  const complianceAddOnLoaded =
-    complianceAddOn !== null &&
-    lineItems.some(
-      (lineItem) =>
-        lineItem.item_id === complianceAddOn.id && lineItem.package_id === null,
-    );
 
-  /**
-   * Step fields remain local-first so later API integration only has to swap
-   * out the write source, not rebuild the page structure.
-   */
   const handleStarterFieldChange = (
     field: keyof StarterPreConfiguration,
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -469,10 +242,6 @@ export default function WorkflowStepPage(): ReactElement {
     updateStarterPreConfigurationField(field, event.target.value);
   };
 
-  /**
-   * The proceed action advances through ordered workflow steps and routes to the
-   * next page when one exists.
-   */
   const handleProceed = (): void => {
     if (workflowCompleted || !ready || !isEditable) {
       return;
@@ -485,82 +254,25 @@ export default function WorkflowStepPage(): ReactElement {
     }
   };
 
-  /**
-   * The example package action seeds the first commercial line bundle.
-   */
-  const handleLoadStarterPackage = (): void => {
-    if (!activeEstimate || !starterPackage) {
-      return;
-    }
-
-    addPackage(activeEstimate.id, starterPackage.id);
-  };
-
-  /**
-   * The add-on action seeds one standalone service line.
-   */
-  const handleLoadComplianceAddOn = (): void => {
-    if (!activeEstimate || !complianceAddOn) {
-      return;
-    }
-
-    addCatalogItem(activeEstimate.id, complianceAddOn.id);
-  };
-
-  /**
-   * Each route renders only the controls owned by that workflow step.
-   */
   let stepBody: ReactElement;
 
   switch (routeStepId) {
-    case "customer-collection":
-      stepBody = renderCustomerCollectionStep(
+    case "step-2":
+      stepBody = renderStepTwo(
         starterPreConfiguration,
+        referenceCode,
         isEditable,
         handleStarterFieldChange,
       );
       break;
-    case "quote-identity":
-      stepBody = renderQuoteIdentityStep(
-        starterPreConfiguration,
-        starterQuoteCode,
-        isEditable,
-        handleStarterFieldChange,
-      );
-      break;
-    case "scope-review":
-      stepBody = renderStarterScopeStep(
-        isEditable,
-        starterPackage?.name ?? "Example package",
-        starterPackage?.description ??
-          "Use one example package so this template starts with real commercial scope.",
-        complianceAddOn?.name ?? "Compliance add-on",
-        complianceAddOn?.description ??
-          "Add one standalone line so quantity edits and pricing review are visible.",
-        starterPackageLoaded,
-        complianceAddOnLoaded,
-        lineItems,
-        handleLoadStarterPackage,
-        handleLoadComplianceAddOn,
-        (lineItem) =>
-          updateSelectionQuantity(
-            workspace.active_estimate_id,
-            lineItem.id,
-            lineItem.quantity + 1,
-          ),
-        (lineItem) =>
-          updateSelectionQuantity(
-            workspace.active_estimate_id,
-            lineItem.id,
-            lineItem.quantity - 1,
-          ),
-        (lineItem) => removeSelection(workspace.active_estimate_id, lineItem.id),
-        canSeePricing,
-        workspace.ui.active_role,
-      );
-      break;
+    case "step-1":
     default:
-      stepBody = <div />;
+      stepBody = renderStepOne(
+        starterPreConfiguration,
+        isEditable,
+        handleStarterFieldChange,
+      );
+      break;
   }
 
   return (
@@ -576,18 +288,14 @@ export default function WorkflowStepPage(): ReactElement {
         </div>
 
         <div className="grid grid-cols-2 gap-3 text-sm md:min-w-[320px]">
-          <div className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="text-xs text-stone-500 dark:text-zinc-400">
-              Stage
-            </div>
+          <div className="rounded-lg bg-stone-50 px-3 py-2 ring-1 ring-stone-200/80 dark:bg-zinc-900 dark:ring-zinc-800/80">
+            <div className="text-xs text-stone-500 dark:text-zinc-400">Stage</div>
             <div className="mt-1 font-medium text-stone-950 dark:text-zinc-100">
               {resolvedRouteStep.sectionTitle}
             </div>
           </div>
-          <div className="rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="text-xs text-stone-500 dark:text-zinc-400">
-              Step
-            </div>
+          <div className="rounded-lg bg-stone-50 px-3 py-2 ring-1 ring-stone-200/80 dark:bg-zinc-900 dark:ring-zinc-800/80">
+            <div className="text-xs text-stone-500 dark:text-zinc-400">Step</div>
             <div className="mt-1 font-medium text-stone-950 dark:text-zinc-100">
               {resolvedRouteStep.stepIndex + 1} of {resolvedRouteStep.stepCount}
             </div>
@@ -596,14 +304,17 @@ export default function WorkflowStepPage(): ReactElement {
       </div>
 
       <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_320px] 2xl:gap-6 2xl:grid-cols-[minmax(0,1fr)_360px]">
-        <section className="rounded-lg border border-stone-200 bg-card dark:border-zinc-800">
-          <div className="border-b border-stone-200 px-5 py-4 dark:border-zinc-800">
-            <div className="text-sm font-medium text-stone-950 dark:text-zinc-100">
+        <Card
+          data-testid="workflow-primary-card"
+          className={`${workflowPanelClassName} py-0`}
+        >
+          <CardHeader className="border-b border-stone-200 px-5 py-4 dark:border-zinc-800">
+            <CardTitle className="text-sm font-medium text-stone-950 dark:text-zinc-100">
               {stepContent.title}
-            </div>
-          </div>
+            </CardTitle>
+          </CardHeader>
 
-          <div className="px-5 py-5">{stepBody}</div>
+          <CardContent className="px-5 py-5">{stepBody}</CardContent>
 
           <div
             data-testid="workflow-step-footer"
@@ -631,51 +342,61 @@ export default function WorkflowStepPage(): ReactElement {
               </Button>
             </div>
           </div>
-        </section>
+        </Card>
 
         <aside className="space-y-4">
-          <section className="rounded-lg border border-stone-200 bg-card px-4 py-4 dark:border-zinc-800">
-            <div className="text-sm font-medium text-stone-950 dark:text-zinc-100">
-              Quote summary
-            </div>
+          <Card
+            data-testid="workflow-summary-card"
+            className={`${workflowPanelClassName} px-4 py-4`}
+          >
+            <CardTitle className="text-sm font-medium text-stone-950 dark:text-zinc-100">
+              Workflow summary
+            </CardTitle>
 
-            <div className="mt-4 space-y-3 text-sm">
+            <CardContent className="mt-4 space-y-3 px-0 text-sm">
               <div>
-                <div className="text-stone-500 dark:text-zinc-400">Quote code</div>
+                <div className="text-stone-500 dark:text-zinc-400">Reference code</div>
                 <div className="mt-1 font-medium text-stone-950 dark:text-zinc-100">
-                  {starterQuoteCode}
+                  {referenceCode}
                 </div>
               </div>
 
               <div>
-                <div className="text-stone-500 dark:text-zinc-400">Customer</div>
+                <div className="text-stone-500 dark:text-zinc-400">
+                  Primary label
+                </div>
                 <div className="mt-1 font-medium text-stone-950 dark:text-zinc-100">
-                  {starterPreConfiguration.customer_name.trim() || "Not entered"}
+                  {starterPreConfiguration.primary_label.trim() || "Not entered"}
                 </div>
               </div>
 
               <div>
-                <div className="text-stone-500 dark:text-zinc-400">Collection</div>
+                <div className="text-stone-500 dark:text-zinc-400">
+                  Secondary label
+                </div>
                 <div className="mt-1 font-medium text-stone-950 dark:text-zinc-100">
-                  {starterPreConfiguration.collection_name.trim() || "Not entered"}
+                  {starterPreConfiguration.secondary_label.trim() || "Not entered"}
                 </div>
               </div>
 
               <div>
                 <div className="text-stone-500 dark:text-zinc-400">Item</div>
                 <div className="mt-1 font-medium text-stone-950 dark:text-zinc-100">
-                  {starterPreConfiguration.item_name.trim() || "Not entered"}
+                  {starterPreConfiguration.item_label.trim() || "Not entered"}
                 </div>
               </div>
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
-          <section className="rounded-lg border border-stone-200 bg-card px-4 py-4 dark:border-zinc-800">
-            <div className="text-sm font-medium text-stone-950 dark:text-zinc-100">
+          <Card
+            data-testid="workflow-status-card"
+            className={`${workflowPanelClassName} px-4 py-4`}
+          >
+            <CardTitle className="text-sm font-medium text-stone-950 dark:text-zinc-100">
               Workflow status
-            </div>
+            </CardTitle>
 
-            <div className="mt-4 space-y-3 text-sm">
+            <CardContent className="mt-4 space-y-3 px-0 text-sm">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-stone-500 dark:text-zinc-400">
                   Progress
@@ -690,30 +411,28 @@ export default function WorkflowStepPage(): ReactElement {
                   Scope value
                 </span>
                 <span className="font-medium text-stone-950 dark:text-zinc-100">
-                  {formatPriceVisibility(totals.total, workspace.ui.active_role)}
+                  {formatCurrency(estimateTotals.total)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between gap-3">
-                <span className="text-stone-500 dark:text-zinc-400">
-                  Quantity
-                </span>
+                <span className="text-stone-500 dark:text-zinc-400">Quantity</span>
                 <span className="font-medium text-stone-950 dark:text-zinc-100">
-                  {totals.itemCount}
+                  {estimateTotals.itemCount}
                 </span>
               </div>
 
               {workflowCompleted && (
-                <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">
-                  Example workflow complete.
+                <div className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800 ring-1 ring-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-200 dark:ring-emerald-900/80">
+                  Workflow complete.
                 </div>
               )}
-            </div>
-          </section>
+            </CardContent>
+          </Card>
 
           {!isEditable && (
-            <section className="rounded-lg border border-stone-200 bg-card px-4 py-4 text-sm text-stone-500 dark:border-zinc-800 dark:text-zinc-400">
-              {workspace.ui.active_role} can review this example workflow, but
+            <section className="rounded-lg bg-card px-4 py-4 text-sm text-stone-500 shadow-xs ring-1 ring-stone-200/80 dark:text-zinc-400 dark:shadow-sm dark:ring-zinc-800/80">
+              {workspace.ui.active_role} can review this workflow, but
               only admin and estimator can edit or proceed.
             </section>
           )}

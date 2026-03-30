@@ -1,4 +1,3 @@
-// THIS LAYOUT WRAPS MOCK SAMPLE SHELL STATE ONLY. REMOVE IT AND RE-ADD THE REAL REQUEST UI WHEN NEEDED.
 import { useEffect, type ReactElement } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { Moon, Sun, UserRound } from "lucide-react";
@@ -42,8 +41,8 @@ interface WorkspaceUserMenuProps {
 }
 
 /**
- * Renders the seeded workspace user summary as a small dropdown instead of a
- * sheet so the header stays compact.
+ * Renders the workspace user summary as a small dropdown instead of a sheet so
+ * the header stays compact.
  */
 function WorkspaceUserMenu({ role }: WorkspaceUserMenuProps): ReactElement {
   return (
@@ -56,17 +55,17 @@ function WorkspaceUserMenu({ role }: WorkspaceUserMenuProps): ReactElement {
       <PopoverContent align="end" className="w-72 p-0">
         <PopoverHeader className="px-4 py-3">
           <PopoverTitle className="text-sm font-semibold text-stone-900 dark:text-zinc-100">
-            Seeded Workspace User
+            Workspace User
           </PopoverTitle>
           <PopoverDescription className="text-sm text-stone-500 dark:text-zinc-400">
-            Workspace controls for the seeded CPQ example.
+            Workspace controls for the shell.
           </PopoverDescription>
         </PopoverHeader>
         <div className="space-y-3 px-4 py-4 text-sm text-stone-600 dark:text-zinc-300">
           <div>
             <div className="text-stone-500 dark:text-zinc-400">Signed in as</div>
             <div className="mt-1 font-medium text-stone-900 dark:text-zinc-100">
-              Seeded workspace user
+              Workspace user
             </div>
           </div>
           <div>
@@ -162,8 +161,7 @@ function MainLayoutShell(): ReactElement {
                   <SheetHeader>
                     <SheetTitle>Workspace Access</SheetTitle>
                     <SheetDescription>
-                      Preview the sample role state that ships with the template.
-                      Remove this control when the real auth flow is wired.
+                      Preview the active role state in the shell.
                     </SheetDescription>
                   </SheetHeader>
                   <div className="space-y-4 px-4 pb-4">

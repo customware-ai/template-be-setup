@@ -31,9 +31,11 @@ describe('Button', () => {
     it('should apply outline variant', () => {
       render(<Button variant="outline">Outline</Button>);
       const button = screen.getByRole('button');
-      expect(button.className).toContain('border');
+      expect(button.className).toContain('border-0');
       expect(button.className).toContain('bg-card');
-      expect(button.className).toContain('shadow-sm');
+      expect(button.className).toContain('ring-1');
+      expect(button.className).toContain('ring-stone-200/80');
+      expect(button.className).toContain('shadow-xs');
     });
 
     it('should apply ghost variant', () => {

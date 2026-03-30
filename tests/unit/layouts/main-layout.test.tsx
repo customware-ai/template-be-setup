@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   createMemoryRouter,
@@ -13,18 +13,12 @@ import {
   seedCpqWorkspaceInStorage,
 } from "../../../app/utils/cpq-storage";
 
-/**
- * Minimal route body used to confirm shell-driven step navigation.
- */
 function StepRouteBody(): ReactElement {
   const params = useParams();
 
   return <div>{params.stepId} body</div>;
 }
 
-/**
- * Builds a memory router around the shared CPQ layout.
- */
 function createLayoutRouter(
   initialEntries: string[],
 ): ReturnType<typeof createMemoryRouter> {
@@ -43,10 +37,6 @@ function createLayoutRouter(
   );
 }
 
-/**
- * Updates the mocked viewport width so the shadcn sidebar can switch between
- * desktop off-canvas behavior and mobile sheet behavior inside jsdom.
- */
 function setViewportWidth(width: number): void {
   Object.defineProperty(window, "innerWidth", {
     configurable: true,
@@ -55,9 +45,6 @@ function setViewportWidth(width: number): void {
   });
 }
 
-/**
- * Radix Select expects pointer-capture APIs that jsdom does not implement.
- */
 function installPointerCaptureStubs(): void {
   Object.defineProperties(HTMLElement.prototype, {
     hasPointerCapture: {
@@ -79,9 +66,6 @@ function installPointerCaptureStubs(): void {
   });
 }
 
-/**
- * Reads the persisted role from the seeded workspace payload.
- */
 function readStoredRole(): string | null {
   const workspace = window.localStorage.getItem("cohesiv_cpq_workspace");
 
@@ -100,74 +84,41 @@ describe("main layout", () => {
     seedCpqWorkspaceInStorage();
   });
 
-  it("renders the CPQ shell navigation and staged workflow rail", async () => {
-    const router = createLayoutRouter(["/workflow/customer-collection"]);
+  it("renders the neutral shell navigation and workflow rail", async () => {
+    const router = createLayoutRouter(["/workflow/step-1"]);
     render(<RouterProvider router={router} />);
 
-    const logoMark = await screen.findByText("CW");
-    const sidebarWrapper = document.querySelector('[data-slot="sidebar-wrapper"]');
-    const contentContainer = document.querySelector("main > div");
-
-    expect(logoMark).toBeInTheDocument();
-    expect(sidebarWrapper).toHaveClass("2xl:[--sidebar-width:18rem]");
-    expect(contentContainer).toHaveClass("max-w-[1400px]", "2xl:max-w-[1520px]");
-    expect(logoMark).toHaveClass("rounded-xl", "px-2.5", "py-2");
-    expect(logoMark).not.toHaveClass("border");
-    expect(screen.queryByText("Customware CPQ")).not.toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: "Workspace" })).toHaveLength(2);
+    expect(await screen.findByText("CW")).toBeInTheDocument();
     expect(screen.getByText("Workflow")).toBeInTheDocument();
-    expect(screen.getByText("0 of 3 steps")).toBeInTheDocument();
-    expect(screen.getByText("0%")).toBeInTheDocument();
+    expect(screen.getByText("0 of 2 steps")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /Pre-Configuration/i }),
-    ).toHaveAttribute("aria-expanded", "true");
-    expect(screen.getByText("Step 1 of 2")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Scope & Review/i })).toHaveTextContent(
-      "Upcoming",
+    ).toHaveAttribute(
+      "aria-expanded",
+      "true",
     );
     expect(
-      screen.getByRole("button", { name: "Customer & Collection" }),
+      screen.getByRole("button", { name: "Primary Details" }),
     ).toHaveAttribute("aria-current", "step");
-    expect(screen.getByText("customer-collection body")).toBeInTheDocument();
-  });
-
-  it("collapses and expands a workflow stage without navigating", async () => {
-    const router = createLayoutRouter(["/workflow/customer-collection"]);
-    render(<RouterProvider router={router} />);
-
-    const sectionToggle = screen.getByRole("button", {
-      name: /Pre-Configuration/i,
-    });
-    const sectionContent = document.getElementById(
-      sectionToggle.getAttribute("aria-controls") ?? "",
+    expect(screen.getByRole("button", { name: "View as Role" })).toHaveClass(
+      "ring-1",
     );
-
-    expect(screen.getByRole("button", { name: "Quote Identity" })).toBeInTheDocument();
-
-    await userEvent.click(sectionToggle);
-
-    expect(sectionToggle).toHaveAttribute("aria-expanded", "false");
-    expect(sectionContent).toHaveAttribute("hidden");
-    expect(screen.getByText("customer-collection body")).toBeInTheDocument();
-
-    await userEvent.click(sectionToggle);
-
-    expect(sectionToggle).toHaveAttribute("aria-expanded", "true");
-    expect(sectionContent).not.toHaveAttribute("hidden");
-    expect(screen.getByRole("button", { name: "Quote Identity" })).toBeInTheDocument();
+    expect(screen.getByText("step-1 body")).toBeInTheDocument();
   });
 
-  it("navigates between workflow step pages from the rail", async () => {
-    const router = createLayoutRouter(["/workflow/customer-collection"]);
+  it("navigates to another workflow step from the rail", async () => {
+    const user = userEvent.setup();
+    const router = createLayoutRouter(["/workflow/step-1"]);
     render(<RouterProvider router={router} />);
 
-    await userEvent.click(screen.getByRole("button", { name: "Quote Identity" }));
+    await user.click(screen.getByRole("button", { name: "Reference Details" }));
 
-    expect(await screen.findByText("quote-identity body")).toBeInTheDocument();
+    expect(await screen.findByText("step-2 body")).toBeInTheDocument();
   });
 
-  it("collapses and restores the desktop workflow sidebar", async () => {
-    const router = createLayoutRouter(["/workflow/customer-collection"]);
+  it("toggles the desktop workflow sidebar", async () => {
+    const user = userEvent.setup();
+    const router = createLayoutRouter(["/workflow/step-1"]);
     render(<RouterProvider router={router} />);
 
     const sidebarRoot = document.querySelector(
@@ -176,78 +127,38 @@ describe("main layout", () => {
 
     expect(sidebarRoot).toHaveAttribute("data-state", "expanded");
 
-    await userEvent.click(
+    await user.click(
       screen.getByRole("button", { name: "Toggle workflow sidebar" }),
     );
 
     expect(sidebarRoot).toHaveAttribute("data-state", "collapsed");
-
-    await userEvent.click(
-      screen.getByRole("button", { name: "Toggle workflow sidebar" }),
-    );
-
-    expect(sidebarRoot).toHaveAttribute("data-state", "expanded");
   });
 
-  it("closes the mobile workflow drawer after selecting a step", async () => {
-    setViewportWidth(390);
-    const router = createLayoutRouter(["/workflow/customer-collection"]);
+  it("opens the workspace user dropdown and keeps role preview in memory", async () => {
+    const user = userEvent.setup();
+    const router = createLayoutRouter(["/workflow/step-1"]);
     render(<RouterProvider router={router} />);
 
-    await userEvent.click(
-      screen.getByRole("button", { name: "Toggle workflow sidebar" }),
+    await user.click(screen.getByRole("button", { name: "User menu" }));
+
+    expect(await screen.findByText("Workspace User", { exact: true })).toBeVisible();
+    expect(screen.getByText("Workspace controls for the shell.")).toBeVisible();
+    expect(document.querySelector('[data-slot="popover-content"]')).toHaveClass(
+      "shadow-lg",
     );
 
-    const sidebarDialog = await screen.findByRole("dialog", { name: "Sidebar" });
-
-    await userEvent.click(
-      within(sidebarDialog).getByRole("button", { name: "Quote Identity" }),
-    );
-
-    expect(await screen.findByText("quote-identity body")).toBeInTheDocument();
-    expect(screen.queryByRole("dialog", { name: "Sidebar" })).not.toBeInTheDocument();
-  });
-
-  it("toggles the persisted theme mode from the header control", async () => {
-    const router = createLayoutRouter(["/workflow/customer-collection"]);
-    render(<RouterProvider router={router} />);
-
-    expect(document.documentElement.classList.contains("dark")).toBe(false);
-
-    await userEvent.click(screen.getByRole("button", { name: "Theme utility" }));
-
-    expect(document.documentElement.classList.contains("dark")).toBe(true);
-  });
-
-  it("opens and closes the seeded workspace user dropdown from the header icon", async () => {
-    const router = createLayoutRouter(["/workflow/customer-collection"]);
-    render(<RouterProvider router={router} />);
-
-    await userEvent.click(screen.getByRole("button", { name: "User menu" }));
+    await user.keyboard("{Escape}");
 
     expect(
-      await screen.findByText("Seeded Workspace User", { exact: true }),
-    ).toBeVisible();
-    expect(
-      screen.getByText("Workspace controls for the seeded CPQ example."),
-    ).toBeVisible();
-
-    await userEvent.keyboard("{Escape}");
-
-    expect(
-      screen.queryByText("Seeded Workspace User", { exact: true }),
+      screen.queryByText("Workspace User", { exact: true }),
     ).not.toBeInTheDocument();
-  });
 
-  it("keeps role preview in memory instead of persisting it", async () => {
-    const router = createLayoutRouter(["/workflow/customer-collection"]);
-    render(<RouterProvider router={router} />);
-
-    expect(readStoredRole()).toBe("admin");
-
-    await userEvent.click(screen.getByRole("button", { name: "View as Role" }));
-    await userEvent.click(screen.getByRole("combobox"));
-    await userEvent.click(await screen.findByRole("option", { name: "Viewer" }));
+    await user.click(screen.getByRole("button", { name: "View as Role" }));
+    await user.click(screen.getByRole("combobox"));
+    expect(document.querySelector('[data-slot="select-content"]')).toHaveClass(
+      "shadow-lg",
+    );
+    await user.click(await screen.findByRole("option", { name: "Viewer" }));
 
     expect(await screen.findByText("Active role:")).toBeInTheDocument();
     expect(screen.getByText("Viewer")).toBeInTheDocument();

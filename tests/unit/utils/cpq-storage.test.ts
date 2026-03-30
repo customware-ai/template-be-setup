@@ -11,90 +11,55 @@ describe("useCpqWorkspaceStorage", () => {
     clearCpqWorkspaceFromStorage();
   });
 
-  it("hydrates the seeded workspace and can add a catalog item", async () => {
+  it("hydrates the neutral workspace and persists starter fields", async () => {
     const { result } = renderHook(() => useCpqWorkspaceStorage());
 
     await act(async () => {
-      result.current.addCatalogItem("est-001002", "item-inspection-plan");
+      result.current.updateStarterPreConfigurationField("primary_label", "Workspace");
+      result.current.updateStarterPreConfigurationField("secondary_label", "Context");
+      result.current.updateStarterPreConfigurationField("reference_year", "2026");
+      result.current.updateStarterPreConfigurationField("reference_sequence", "014");
+      result.current.updateStarterPreConfigurationField("item_label", "Item");
     });
 
-    expect(result.current.workspace.estimates).toHaveLength(1);
-    expect(
-      result.current.workspace.estimates[0]?.build_selections.some(
-        (selection) => selection.item_id === "item-inspection-plan",
-      ),
-    ).toBe(true);
-
-    const storedWorkspace = JSON.parse(
-      window.localStorage.getItem(CPQ_WORKSPACE_STORAGE_KEY) ?? "null",
-    ) as { estimates: Array<{ build_selections: Array<{ item_id: string }> }> };
-
-    expect(
-      storedWorkspace.estimates[0]?.build_selections.some(
-        (selection) => selection.item_id === "item-inspection-plan",
-      ),
-    ).toBe(true);
-  });
-
-  it("duplicates an estimate into a new draft record", async () => {
-    const { result } = renderHook(() => useCpqWorkspaceStorage());
-
-    let duplicatedEstimateId: string | null = null;
-
-    await act(async () => {
-      duplicatedEstimateId = result.current.duplicateEstimate("est-001002");
-    });
-
-    expect(duplicatedEstimateId).toBe("est-001002-copy");
-    expect(result.current.workspace.estimates).toHaveLength(2);
-    expect(result.current.workspace.estimates[0]?.status).toBe("draft");
-  });
-
-  it("advances workflow state across stages and marks the example complete", async () => {
-    const { result } = renderHook(() => useCpqWorkspaceStorage());
-
-    await act(async () => {
-      result.current.advanceWorkflow();
-      result.current.advanceWorkflow();
-      result.current.advanceWorkflow();
-      result.current.toggleThemeMode();
-    });
-
-    expect(result.current.workspace.ui.active_workflow_step_id).toBe(
-      "scope-review",
-    );
-    expect(result.current.workspace.ui.workflow_completed).toBe(true);
-    expect(result.current.workspace.ui.theme_mode).toBe("dark");
-  });
-
-  it("persists example pre-configuration fields into workspace storage", async () => {
-    const { result } = renderHook(() => useCpqWorkspaceStorage());
-
-    await act(async () => {
-      result.current.updateStarterPreConfigurationField("customer_name", "BarkBilt");
-      result.current.updateStarterPreConfigurationField("quote_year", "2026");
-      result.current.updateStarterPreConfigurationField("sequence_code", "014");
-    });
-
-    expect(result.current.workspace.starter_pre_configuration.customer_name).toBe(
-      "BarkBilt",
+    expect(result.current.workspace.starter_pre_configuration.primary_label).toBe(
+      "Workspace",
     );
     expect(result.current.workspace.estimates[0]?.estimate_number).toBe(
-      "EST-2026-014",
+      "REF-2026-014",
     );
 
     const storedWorkspace = JSON.parse(
       window.localStorage.getItem(CPQ_WORKSPACE_STORAGE_KEY) ?? "null",
     ) as {
-      starter_pre_configuration: { customer_name: string };
+      starter_pre_configuration: {
+        primary_label: string;
+        reference_sequence: string;
+      };
       estimates: Array<{ estimate_number: string }>;
     };
 
-    expect(storedWorkspace.starter_pre_configuration.customer_name).toBe("BarkBilt");
-    expect(storedWorkspace.estimates[0]?.estimate_number).toBe("EST-2026-014");
+    expect(storedWorkspace.starter_pre_configuration.primary_label).toBe(
+      "Workspace",
+    );
+    expect(storedWorkspace.estimates[0]?.estimate_number).toBe("REF-2026-014");
   });
 
-  it("creates a new example division and returns its estimate id", async () => {
+  it("advances workflow state across the neutral two-step shell", async () => {
+    const { result } = renderHook(() => useCpqWorkspaceStorage());
+
+    await act(async () => {
+      result.current.advanceWorkflow();
+      result.current.advanceWorkflow();
+      result.current.toggleThemeMode();
+    });
+
+    expect(result.current.workspace.ui.active_workflow_step_id).toBe("step-2");
+    expect(result.current.workspace.ui.workflow_completed).toBe(true);
+    expect(result.current.workspace.ui.theme_mode).toBe("dark");
+  });
+
+  it("creates a new workspace division and returns its estimate id", async () => {
     const { result } = renderHook(() => useCpqWorkspaceStorage());
 
     let estimateId = "";

@@ -400,9 +400,8 @@ export function HydrateFallback(): ReactElement {
           className="hydrate-loader"
         >
           {/**
-           * The enterprise starter benefits from a loader that feels closer to a
-           * quote/document workflow than a generic spinner, so the fallback uses
-           * a restrained stack of animated sheets instead of circular chrome.
+           * The shell uses a restrained document-style loader so the initial
+           * hydration state feels consistent with the rest of the layout.
            */}
           <div aria-hidden="true" className="hydrate-loader__glow" />
           <div
@@ -431,13 +430,13 @@ export function HydrateFallback(): ReactElement {
         </div>
         <div className="hydrate-fallback__copy">
           <p data-slot="hydrate-loader-title" className="hydrate-fallback__title">
-            Preparing Workspace
+            Preparing shell
           </p>
           <p
             data-slot="hydrate-loader-caption"
             className="hydrate-fallback__caption"
           >
-            Syncing pricing canvas and quote context
+            Syncing layout and workflow state
           </p>
         </div>
       </div>

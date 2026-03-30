@@ -1,5 +1,5 @@
 /**
- * Pure workflow state used by the starter shell and any future backend-backed
+ * Pure workflow state used by the shell and any future backend-backed
  * workflow implementation. The engine owns only ordering and progression, not
  * persistence.
  */

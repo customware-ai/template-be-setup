@@ -1,4 +1,3 @@
-// THIS FILE ONLY PERSISTS MOCK SAMPLE WORKSPACE STATE. REMOVE IT AND RE-ADD THE REAL REQUEST LOGIC WHEN NEEDED.
 import { useEffect, useMemo, useState } from "react";
 import {
   addCatalogItemToEstimateInWorkspace,
@@ -33,40 +32,39 @@ import {
 } from "../hooks/use-local-storage";
 
 /**
- * Storage key used for the seeded CPQ workspace.
+ * Storage key used for the local CPQ workspace.
  */
 export const CPQ_WORKSPACE_STORAGE_KEY = "cohesiv_cpq_workspace";
 
 /**
- * Stable seeded workspace reference used during hydration.
+ * Stable workspace reference used during hydration.
  */
 const DEFAULT_CPQ_WORKSPACE = createDefaultCpqWorkspace();
 let rolePreviewOverride: UserRole | null = null;
 const rolePreviewListeners = new Set<(role: UserRole | null) => void>();
 
-/**
- * THIS ONLY NORMALIZES SAMPLE WORKSPACE STORAGE. DO NOT USE IT FOR REAL CUSTOMER DATA.
- * THIS IS MOCK STORAGE COMPATIBILITY ONLY. REMOVE IT AND RE-ADD THE REAL REQUEST LOGIC WHEN NEEDED.
- */
 function normalizeWorkspaceShape(workspace: CpqWorkspace): CpqWorkspace {
   const defaultWorkflowStepId = getDefaultWorkflowStepId();
   const normalizedWorkflowStepId =
-    workspace.ui.active_workflow_step_id === "starter-scope"
-      ? "scope-review"
-      : workspace.ui.active_workflow_step_id || defaultWorkflowStepId;
+    workspace.ui.active_workflow_step_id === "customer-collection"
+      ? "step-1"
+      : workspace.ui.active_workflow_step_id === "quote-identity"
+        ? "step-2"
+        : workspace.ui.active_workflow_step_id === "scope-review" ||
+            workspace.ui.active_workflow_step_id === "starter-scope"
+          ? "step-2"
+          : workspace.ui.active_workflow_step_id || defaultWorkflowStepId;
 
   return {
     ...workspace,
     starter_pre_configuration: {
-      customer_name: workspace.starter_pre_configuration.customer_name ?? "",
-      collection_name:
-        workspace.starter_pre_configuration.collection_name ?? "",
-      quote_year: workspace.starter_pre_configuration.quote_year ?? "",
-      sequence_code:
-        workspace.starter_pre_configuration.sequence_code ?? "",
-      item_name: workspace.starter_pre_configuration.item_name ?? "",
-      confirmation_notes:
-        workspace.starter_pre_configuration.confirmation_notes ?? "",
+      primary_label: workspace.starter_pre_configuration.primary_label ?? "",
+      secondary_label:
+        workspace.starter_pre_configuration.secondary_label ?? "",
+      reference_year: workspace.starter_pre_configuration.reference_year ?? "",
+      reference_sequence:
+        workspace.starter_pre_configuration.reference_sequence ?? "",
+      item_label: workspace.starter_pre_configuration.item_label ?? "",
     },
     ui: {
       active_workflow_step_id: normalizedWorkflowStepId,
@@ -102,7 +100,7 @@ function subscribeToRolePreview(
 }
 
 /**
- * Shared hook contract for the local-first CPQ starter.
+ * Shared hook contract for the local-first CPQ shell.
  */
 interface UseCpqWorkspaceStorageResult {
   workspace: CpqWorkspace;
@@ -159,7 +157,6 @@ export function seedCpqWorkspaceInStorage(workspace?: CpqWorkspace): void {
   }
 
   const value = workspace ?? createDefaultCpqWorkspace();
-  // THIS SEEDED WORKSPACE IS SAMPLE-ONLY DATA. DO NOT TREAT IT AS A REAL CUSTOMER PAYLOAD.
   window.localStorage.setItem(
     CPQ_WORKSPACE_STORAGE_KEY,
     JSON.stringify(value),
@@ -238,10 +235,10 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   };
 
   /**
-   * Restores the default seeded workspace.
+   * Restores the default workspace.
    *
-   * This is a development and test helper for the sample workspace seed, not
-   * a product requirement for the eventual backend-backed CPQ app.
+   * This is a development and test helper for the workspace, not a
+   * product requirement for the eventual backend-backed CPQ app.
    */
   const resetWorkspace = (): void => {
     setRolePreviewOverride(null);
@@ -347,7 +344,7 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   };
 
   /**
-   * Adds an example file record to the selected estimate.
+   * Adds a workspace file record to the selected estimate.
    */
   const addExampleAttachment = (estimateId: string): void => {
     commitWorkspaceUpdate((currentWorkspace) =>
@@ -356,7 +353,7 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   };
 
   /**
-   * Removes an example file record from the selected estimate.
+   * Removes a workspace file record from the selected estimate.
    */
   const removeAttachment = (estimateId: string, attachmentId: string): void => {
     commitWorkspaceUpdate((currentWorkspace) =>
@@ -384,7 +381,7 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   };
 
   /**
-   * Persists the starter page CPQ inputs that power the single-page template.
+   * Persists the shell CPQ inputs that power the single-page template.
    */
   const updateStarterPreConfigurationField = (
     field: keyof StarterPreConfiguration,
@@ -400,7 +397,7 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   };
 
   /**
-   * Creates a new example division/opportunity pair and returns its estimate id.
+   * Creates a new workspace division/opportunity pair and returns its estimate id.
    */
   const createDivision = (): string => {
     let createdEstimateId = "";
@@ -434,7 +431,7 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   };
 
   /**
-   * Advances the example workflow to the next step.
+   * Advances the workflow to the next step.
    */
   const advanceWorkflow = (): void => {
     commitWorkspaceUpdate((currentWorkspace) =>
@@ -443,7 +440,7 @@ export function useCpqWorkspaceStorage(): UseCpqWorkspaceStorageResult {
   };
 
   /**
-   * Updates the active demo role for RBAC previews without persisting it.
+   * Updates the active role for RBAC previews without persisting it.
    */
   const setActiveRole = (role: UserRole): void => {
     setRolePreviewOverride(role);

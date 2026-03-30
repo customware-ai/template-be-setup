@@ -2,7 +2,7 @@
 
 **This is a code style and architecture template repository.** Use it as a reference for coding patterns, project structure, and development standards when building production applications.
 
-The template demonstrates a simplified, modern stack with React Router v7, TypeScript, Tailwind CSS, Hono, tRPC, and SQLite via Drizzle + better-sqlite3. The `app/` shell is the starter surface; the `server/` tree is an example backend slice that can be kept, replaced, or removed when your real API lands.
+The template demonstrates a simplified, modern stack with React Router v7, TypeScript, Tailwind CSS, Hono, tRPC, and SQLite via Drizzle + better-sqlite3. The `app/` shell is the starter surface; the `server/` tree is a backend reference slice that can be kept, replaced, or removed when your real API lands.
 
 > **⚠️ Important**: This is a **template repository** showcasing patterns and structure, not a feature-complete product.
 
@@ -29,7 +29,7 @@ The template demonstrates a simplified, modern stack with React Router v7, TypeS
 
 1. Study the patterns in `app/`, `server/`, and `tests/`
 2. Copy the structure into your own project
-3. Replace or delete the sample estimate slice when you wire your real backend
+3. Replace or remove the backend slice when you wire your real backend
 4. Keep strict contracts and Result-based error handling
 5. Follow [AGENTS.md](./AGENTS.md) for development workflow
 
@@ -37,8 +37,8 @@ The template demonstrates a simplified, modern stack with React Router v7, TypeS
 
 ### ✅ Fully Functional (Study These):
 
-- **UI shell and workflow pages** - Shared `MainLayout` + route-backed CPQ workflow starter
-- **Server example slice** - `estimate` contract/query/service/tRPC route chain, kept as reference wiring only
+- **UI shell and workflow pages** - Shared `MainLayout` + route-backed CPQ workflow shell
+- **Backend reference slice** - `estimate` contract/query/service/tRPC route chain, kept as reference wiring only
 - **Database layer** - Drizzle schema + generated SQL migrations + runner
 - **Quality gates** - Typecheck, lint, build, and test workflows
 - **Component library** - Tested reusable UI building blocks
@@ -46,7 +46,7 @@ The template demonstrates a simplified, modern stack with React Router v7, TypeS
 ### 📐 Pattern Scaffolding:
 
 - **tRPC client/provider files in `app/lib/`** - Available as typed integration scaffolding
-- **Example backend note** - The `server/` files are intentionally sample-only until a consuming project swaps in its own API contract
+- **Backend note** - The `server/` files are intentionally reference-only until a consuming project swaps in its own API contract
 - **Single-module backend design** - Intentionally minimal for extension
 
 ## Template Features & Patterns
@@ -57,13 +57,13 @@ This template demonstrates:
 - **Type Safety**: Zod runtime contracts + neverthrow Result/ResultAsync patterns
 - **Database Layer**: better-sqlite3 + Drizzle ORM with migration-driven schema changes
 - **UI Patterns**: Tailwind CSS v4 with reusable components and a shared app layout
-- **Workflow Engine Starter**: CPQ workflow data drives stages, steps, progress, and page routing
+- **Workflow Engine**: CPQ workflow data drives stages, steps, progress, and page routing
 - **Code Quality**: Type-aware linting (oxlint) + Vitest coverage
 - **Architecture**: Explicit client/server boundary with typed API contracts
 
-## Workflow Starter
+## Workflow Shell
 
-This starter is set up as a **CPQ template built around a workflow system**.
+This template is set up as a **CPQ template built around a workflow system**.
 
 - The left workflow rail is organized into **stages**
 - Each stage contains **steps**
@@ -72,11 +72,11 @@ This starter is set up as a **CPQ template built around a workflow system**.
 - Clicking a step navigates to that step page
 - Each step page includes a **proceed action** that advances to the next step, and then into the next stage when needed
 
-The seeded example currently starts with small stages so the template is easy to understand, but the workflow engine is **not** limited to two steps per stage. Teams can add more stages and more steps by extending the workflow data shape.
+The template ships with a neutral workflow shell so the shell renders without business-specific data. The workflow engine is **not** limited to any fixed stage or step count; teams can add, remove, or rename stages and steps by changing the workflow data shape.
 
-Today the workflow state is stored locally in browser storage so the template works without backend setup. Teams building on top of this template can keep the same workflow/page structure and replace the local storage source with their own database-backed workflow data. The visible workflow seed is just an example starter, not a product opinion.
+Today the workflow state is stored locally in browser storage so the template works without backend setup. Teams building on top of this template can keep the same workflow/page structure and replace the local storage source with their own database-backed workflow data.
 
-The workflow behavior itself now lives in a separate core module, `app/lib/workflow-engine.ts`. The starter CPQ data layer feeds stage/step definitions into that engine, and the current template persists the runtime state in local storage. Teams can keep the same engine and swap only the data source, or move the same engine concepts to the backend if they want the workflow to execute server-side.
+The workflow behavior itself now lives in a separate core module, `app/lib/workflow-engine.ts`. The CPQ data layer feeds stage/step definitions into that engine, and the current template persists the runtime state in local storage. Teams can keep the same engine and swap only the data source, or move the same engine concepts to the backend if they want the workflow to execute server-side.
 
 ## Tech Stack
 
@@ -142,22 +142,22 @@ app/
 
 server/
 ├── contracts/
-│   ├── estimate.ts            # Sample Zod runtime contracts for the example API slice
+│   ├── estimate.ts            # Reference Zod runtime contracts for the backend slice
 │   └── index.ts
 ├── db/
-│   ├── index.ts               # Sample Drizzle + better-sqlite3 init for the example API slice
+│   ├── index.ts               # Reference Drizzle + better-sqlite3 init for the backend slice
 │   ├── schemas.ts             # Sample Drizzle table schema
 │   ├── queries/
 │   │   └── estimates.ts       # Sample query layer (ResultAsync)
 │   ├── migrations/            # Generated SQL + drizzle metadata
-│   └── migrate.ts             # Sample migration runner for the example API slice
+│   └── migrate.ts             # Reference migration runner for the backend slice
 ├── services/
-│   └── estimate.ts            # Sample business logic for the example API slice
+│   └── estimate.ts            # Reference business logic for the backend slice
 ├── trpc/
-│   └── router.ts              # Sample API procedures for the example backend slice
+│   └── router.ts              # Reference API procedures for the backend slice
 ├── types/
 │   └── errors.ts              # Shared app error contracts
-├── index.ts                   # Sample Hono app setup for the example backend slice
+├── index.ts                   # Reference Hono app setup for the backend slice
 ├── start.ts                   # Sample server entrypoint
 └── tsconfig.json
 
@@ -186,7 +186,7 @@ tests/
 
 - `estimates`
 
-This intentionally keeps one example table so teams can extend from a clean baseline.
+This intentionally keeps one reference table so teams can extend from a clean baseline.
 
 ## 📝 Scripts
 
@@ -223,7 +223,7 @@ All tests use Vitest (and React Testing Library for UI).
 
 ## 🏗️ Example Module
 
-The repository includes one cohesive sample-only module:
+The repository includes one cohesive backend reference module:
 
 - **Estimate**
   - Contract: `server/contracts/estimate.ts`

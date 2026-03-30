@@ -17,7 +17,10 @@ describe('Select', () => {
     const trigger = screen.getByRole('combobox');
 
     expect(trigger.className).toContain('bg-card');
-    expect(trigger.className).toContain('shadow-sm');
+    expect(trigger.className).toContain('border-0');
+    expect(trigger.className).toContain('ring-1');
+    expect(trigger.className).toContain('ring-stone-200/80');
+    expect(trigger.className).toContain('shadow-xs');
     expect(trigger.className).toContain('hover:bg-accent/40');
   });
 });

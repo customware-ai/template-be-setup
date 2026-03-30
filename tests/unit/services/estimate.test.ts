@@ -58,7 +58,7 @@ afterAll(() => {
   }
 });
 
-describe("estimate service example", () => {
+describe("estimate service", () => {
   it("creates an estimate with default draft status", async () => {
     const result = await createEstimate({
       estimate_number: "EST-001002",

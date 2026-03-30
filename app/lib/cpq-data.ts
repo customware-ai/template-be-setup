@@ -1,4 +1,3 @@
-// THIS FILE CONTAINS MOCK SAMPLE DATA ONLY. REMOVE IT AND RE-ADD THE REAL REQUEST DATA WHEN NEEDED.
 import { z } from "zod";
 import {
   advanceWorkflow as advanceWorkflowState,
@@ -24,12 +23,12 @@ import {
 export const WorkflowStateSchema = z.enum(["complete", "current", "upcoming"]);
 
 /**
- * Estimate lifecycle used by the example CPQ starter.
+ * Estimate lifecycle used by the workspace shell.
  */
 export const EstimateStatusSchema = z.enum(["draft", "review", "approved"]);
 
 /**
- * Example RBAC roles inspired by the CPQ bundle guidance.
+ * Workspace roles used by the shell preview.
  */
 export const UserRoleSchema = z.enum([
   "admin",
@@ -44,7 +43,7 @@ export const UserRoleSchema = z.enum([
 export const ThemeModeSchema = z.enum(["light", "dark"]);
 
 /**
- * Workflow step contract derived from the active sample workflow position.
+ * Workflow step contract derived from the active workflow position.
  */
 export const WorkflowStepSchema = z.object({
   id: z.string().min(1),
@@ -53,7 +52,7 @@ export const WorkflowStepSchema = z.object({
 });
 
 /**
- * Workflow section contract derived from the active sample workflow position.
+ * Workflow section contract derived from the active workflow position.
  */
 export const WorkflowSectionIconKeySchema = z.enum([
   "capture",
@@ -64,7 +63,7 @@ export const WorkflowSectionIconKeySchema = z.enum([
 ]);
 
 /**
- * Workflow section contract derived from the active sample workflow position.
+ * Workflow section contract derived from the active workflow position.
  */
 export const WorkflowSectionSchema = z.object({
   id: z.string().min(1),
@@ -161,7 +160,7 @@ export const EstimateAttachmentSchema = z.object({
 });
 
 /**
- * Minimal example estimate contract used by the frontend template.
+ * Minimal estimate contract used by the frontend template.
  */
 export const EstimateSchema = z.object({
   id: z.string().min(1),
@@ -192,21 +191,20 @@ export const CpqUiStateSchema = z.object({
 });
 
 /**
- * Small persisted CPQ intake payload owned by the example pre-configuration
- * step. It stays intentionally narrow so template users can extend it without
- * inheriting a large demo-specific data shape.
+ * Small persisted CPQ intake payload owned by the starter step. It stays
+ * intentionally narrow so template users can extend it without inheriting a
+ * large demo-specific data shape.
  */
 export const StarterPreConfigurationSchema = z.object({
-  customer_name: z.string(),
-  collection_name: z.string(),
-  quote_year: z.string(),
-  sequence_code: z.string(),
-  item_name: z.string(),
-  confirmation_notes: z.string(),
+  primary_label: z.string(),
+  secondary_label: z.string(),
+  reference_year: z.string(),
+  reference_sequence: z.string(),
+  item_label: z.string(),
 });
 
 /**
- * Root example CPQ workspace stored in localStorage.
+ * Root CPQ workspace stored in localStorage.
  * Only mutable source data is persisted; workflow and dashboard summaries are
  * derived from this shape at read time.
  */
@@ -280,34 +278,30 @@ export interface EstimateTotals {
 }
 
 /**
- * Lightweight dashboard metrics rendered from seeded data.
+ * Lightweight dashboard metrics rendered from workspace data.
  */
 export interface DashboardMetrics {
   opportunityCount: number;
-  quoteCount: number;
+  estimateCount: number;
   totalValue: number;
   averageMargin: number;
 }
 
 /**
- * Example workflow definitions stay isolated from the engine so the sample
- * shell can seed ordered steps without hardcoding progression behavior.
+ * Workflow definitions stay isolated from the engine so the shell can
+ * seed ordered steps without hardcoding progression behavior.
  */
 type StarterWorkflowStepDefinition = WorkflowStepDefinition;
 
 /**
- * Example workflow stages only add the shell metadata needed for the sample
- * sidebar and page headers.
+ * Workflow stages only add the shell metadata needed for the sidebar and page
+ * headers.
  */
 interface StarterWorkflowStageDefinition
   extends WorkflowStageDefinition<StarterWorkflowStepDefinition> {
   icon_key: WorkflowSectionIconKey;
 }
 
-/**
- * THIS MODULE CONTAINS SAMPLE-ONLY SEED DATA. DO NOT TREAT IT AS PRODUCTION DATA.
- * THIS IS MOCK DATA. REMOVE IT AND RE-ADD THE REAL REQUEST DATA WHEN THE PRODUCT NEEDS IT.
- */
 function createBaseWorkflowDefinition(): StarterWorkflowStageDefinition[] {
   return [
     {
@@ -316,23 +310,12 @@ function createBaseWorkflowDefinition(): StarterWorkflowStageDefinition[] {
       icon_key: "capture",
       steps: [
         {
-          id: "customer-collection",
-          label: "Customer & Collection",
+          id: "step-1",
+          label: "Primary Details",
         },
         {
-          id: "quote-identity",
-          label: "Quote Identity",
-        },
-      ],
-    },
-    {
-      id: "scope-review",
-      title: "Scope & Review",
-      icon_key: "proposal",
-      steps: [
-        {
-          id: "scope-review",
-          label: "Scope Review",
+          id: "step-2",
+          label: "Reference Details",
         },
       ],
     },
@@ -340,54 +323,49 @@ function createBaseWorkflowDefinition(): StarterWorkflowStageDefinition[] {
 }
 
 /**
- * Returns the first step from the sample workflow seed so callers do not have
- * to duplicate the synthetic route order.
+ * Returns the first step from the workflow so callers do not have to
+ * duplicate the route order.
  */
 export function getDefaultWorkflowStepId(): string {
-  return getFirstWorkflowStepId(createBaseWorkflowDefinition()) ?? "customer-collection";
+  return getFirstWorkflowStepId(createBaseWorkflowDefinition()) ?? "step-1";
 }
 
 /**
- * Returns the initial sample step label used to keep the seeded estimate in
- * sync with the current example workflow definition.
+ * Returns the initial step label used to keep the workspace in sync
+ * with the current workflow definition.
  */
 function getDefaultWorkflowStepLabel(): string {
   return (
     getCurrentWorkflowStepMeta(createBaseWorkflowDefinition(), {
       activeStepId: getDefaultWorkflowStepId(),
       workflowCompleted: false,
-    })?.stepLabel ?? "Customer & Collection"
+    })?.stepLabel ?? "Primary Details"
   );
 }
 
 /**
- * Returns the sample starter pre-configuration object used for blank local
- * storage hydration and first-run seeding.
+ * Returns the workspace pre-configuration object used for blank local storage
+ * hydration and first-run seeding.
  */
 function createDefaultStarterPreConfiguration(): StarterPreConfiguration {
   return {
-    customer_name: "",
-    collection_name: "",
-    quote_year: "",
-    sequence_code: "",
-    item_name: "",
-    confirmation_notes: "",
+    primary_label: "",
+    secondary_label: "",
+    reference_year: "",
+    reference_sequence: "",
+    item_label: "",
   };
 }
 
-/**
- * THIS IS SAMPLE-ONLY WORKSPACE DATA. DO NOT REUSE THESE VALUES FOR REAL CUSTOMERS.
- * THIS IS MOCK WORKSPACE DATA. REMOVE IT AND RE-ADD THE REAL REQUEST DATA WHEN NEEDED.
- */
 export function createDefaultCpqWorkspace(): CpqWorkspace {
   const defaultWorkflowStepId = getDefaultWorkflowStepId();
   const defaultWorkflowStepLabel = getDefaultWorkflowStepLabel();
 
   return {
     account: {
-      id: "acct-dr-inc",
-      name: "Example Workspace",
-      subtitle: "Single-page CPQ example",
+      id: "acct-workspace",
+      name: "Workspace",
+      subtitle: "Workspace",
       status: "Draft",
       contact_person: null,
       email: null,
@@ -397,17 +375,25 @@ export function createDefaultCpqWorkspace(): CpqWorkspace {
     },
     estimates: [
       {
-        id: "est-001002",
-        estimate_number: "EST-001002",
-        account_name: "Example Workspace",
-        project_name: "Example Configured Item",
+        id: "est-0001",
+        estimate_number: "REF-0001",
+        account_name: "Workspace",
+        project_name: "Configured Item",
         revision_label: "1.0",
         region: "Default",
         status: "draft",
         workflow_stage: defaultWorkflowStepLabel,
         notes: "",
         intake_prompt: "",
-        build_selections: [],
+        build_selections: [
+          {
+            id: "sel-primary",
+            item_id: "item-primary",
+            quantity: 1,
+            source: "catalog",
+            package_id: null,
+          },
+        ],
         modifiers: [],
         attachments: [],
         updated_at: "2026-03-17T17:00:00.000Z",
@@ -415,37 +401,37 @@ export function createDefaultCpqWorkspace(): CpqWorkspace {
     ],
     catalog: [
       {
-        id: "item-under-running-sg",
-        category: "Cranes",
-        name: "Under Running SG",
-        sku: "CR-UR-42D",
-        description: "Roof-mount crane system for compact install footprints.",
+        id: "item-primary",
+        category: "Core",
+        name: "Item 1",
+        sku: "ST-ITEM-01",
+        description: "Placeholder item for the neutral workspace.",
         unit_price: 28_500,
         unit_cost: 20_100,
         lead_time_days: 42,
         uom: "EA",
-        tags: ["BUN", "Roof-mount"],
+        tags: ["Workspace"],
       },
       {
-        id: "item-inspection-plan",
-        category: "Services",
-        name: "Inspection Plan",
-        sku: "SVC-INS-5D",
-        description: "MOL-compliant annual inspection coverage.",
+        id: "item-service",
+        category: "Service",
+        name: "Item 2",
+        sku: "ST-SVC-01",
+        description: "Placeholder service option for the neutral workspace.",
         unit_price: 450,
         unit_cost: 260,
         lead_time_days: 5,
         uom: "EA",
-        tags: ["Compliance"],
+        tags: ["Workspace"],
       },
     ],
     packages: [
       {
-        id: "pkg-crane-package",
-        name: "Example Crane Package",
-        description: "Under Running SG example package",
+        id: "pkg-starter",
+        name: "Package 1",
+        description: "Placeholder package for the neutral workspace.",
         discount_rate: 0.05,
-        items: [{ item_id: "item-under-running-sg", quantity: 1 }],
+        items: [{ item_id: "item-primary", quantity: 1 }],
       },
     ],
     starter_pre_configuration: createDefaultStarterPreConfiguration(),
@@ -455,7 +441,7 @@ export function createDefaultCpqWorkspace(): CpqWorkspace {
       active_role: "admin",
       theme_mode: "light",
     },
-    active_estimate_id: "est-001002",
+    active_estimate_id: "est-0001",
   };
 }
 
@@ -492,7 +478,7 @@ export function getEstimateById(
 }
 
 /**
- * Derives workflow sections by combining example workflow definitions with the
+ * Derives workflow sections by combining the workflow definitions with the
  * persisted workflow position.
  */
 export function getWorkflowSections(workspace: CpqWorkspace): WorkflowSection[] {
@@ -557,8 +543,8 @@ export function getCurrentWorkflowStep(
 }
 
 /**
- * Returns the next step in the example process, crossing stage boundaries when
- * needed so page-level proceed actions can act like a workflow engine.
+ * Returns the next step in the process, crossing stage boundaries when needed
+ * so page-level proceed actions can act like a workflow engine.
  */
 export function getNextWorkflowStep(
   workspace: CpqWorkspace,
@@ -575,7 +561,7 @@ export function getNextWorkflowStep(
 
 /**
  * Exposes workflow completion so routes can distinguish "final step" from
- * "example flow complete."
+ * "workflow complete."
  */
 export function isWorkflowComplete(workspace: CpqWorkspace): boolean {
   return isWorkflowEngineComplete(getWorkflowRuntimeState(workspace));
@@ -687,10 +673,10 @@ export function getEstimateTotals(
 }
 
 /**
- * Derives the top-level dashboard metrics from the seeded workspace.
+ * Derives the top-level dashboard metrics from the workspace.
  */
 export function getDashboardMetrics(workspace: CpqWorkspace): DashboardMetrics {
-  const quoteCount = workspace.estimates.length;
+  const estimateCount = workspace.estimates.length;
   const opportunityCount = workspace.estimates.length;
 
   const totals = workspace.estimates.map((estimate) =>
@@ -706,7 +692,7 @@ export function getDashboardMetrics(workspace: CpqWorkspace): DashboardMetrics {
 
   return {
     opportunityCount,
-    quoteCount,
+    estimateCount,
     totalValue,
     averageMargin,
   };
@@ -750,7 +736,7 @@ export function getWorkflowProgress(workspace: CpqWorkspace): {
 }
 
 /**
- * Formats currency values consistently across the example CPQ workflow.
+ * Formats currency values consistently across the workspace workflow.
  */
 export function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -769,22 +755,22 @@ export function formatPercent(value: number): string {
 }
 
 /**
- * Keeps the example quote code readable even before users fill every field.
+ * Keeps the reference code readable even before users fill every field.
  */
-export function formatStarterQuoteCode(
+export function formatStarterReferenceCode(
   starterPreConfiguration: StarterPreConfiguration | undefined,
 ): string {
   const resolvedStarterPreConfiguration =
     starterPreConfiguration ?? createDefaultStarterPreConfiguration();
   const yearToken =
-    resolvedStarterPreConfiguration.quote_year.trim().replace(/\s+/g, "") ||
+    resolvedStarterPreConfiguration.reference_year.trim().replace(/\s+/g, "") ||
     "YYYY";
   const sequenceToken =
-    resolvedStarterPreConfiguration.sequence_code
+    resolvedStarterPreConfiguration.reference_sequence
       .trim()
       .replace(/\s+/g, "") || "001";
 
-  return `EST-${yearToken}-${sequenceToken.toUpperCase()}`;
+  return `REF-${yearToken}-${sequenceToken.toUpperCase()}`;
 }
 
 /**
@@ -813,7 +799,7 @@ export function canEditWorkspace(role: UserRole): boolean {
 }
 
 /**
- * Approval remains available to approvers and admins in the example workflow.
+ * Approval remains available to approvers and admins in the workflow.
  */
 export function canApproveEstimate(role: UserRole): boolean {
   return role === "admin" || role === "approver";
@@ -1114,8 +1100,8 @@ export function updateAccountFieldInWorkspace(
 }
 
 /**
- * Persists the narrow example pre-configuration form and mirrors the most
- * important CPQ identifiers back into the seeded account and estimate records.
+ * Persists the narrow workspace form and mirrors the most important CPQ
+ * identifiers back into the workspace records.
  */
 export function updateStarterPreConfigurationFieldInWorkspace(
   workspace: CpqWorkspace,
@@ -1127,32 +1113,29 @@ export function updateStarterPreConfigurationFieldInWorkspace(
     ...workspace.starter_pre_configuration,
     [field]: value,
   };
-  const nextCustomerName =
-    nextStarterPreConfiguration.customer_name.trim() || "Example Workspace";
-  const nextCollectionName =
-    nextStarterPreConfiguration.collection_name.trim() || "Single-page CPQ example";
-  const nextItemName =
-    nextStarterPreConfiguration.item_name.trim() || "Example Configured Item";
-  const nextQuoteCode = formatStarterQuoteCode(nextStarterPreConfiguration);
-  const nextConfirmationNotes = nextStarterPreConfiguration.confirmation_notes;
+  const nextPrimaryLabel =
+    nextStarterPreConfiguration.primary_label.trim() || "Workspace";
+  const nextSecondaryLabel =
+    nextStarterPreConfiguration.secondary_label.trim() || "Workspace";
+  const nextItemLabel =
+    nextStarterPreConfiguration.item_label.trim() || "Workspace item";
+  const nextReferenceCode = formatStarterReferenceCode(nextStarterPreConfiguration);
 
   return {
     ...workspace,
     starter_pre_configuration: nextStarterPreConfiguration,
     account: {
       ...workspace.account,
-      name: nextCustomerName,
-      subtitle: nextCollectionName,
-      notes: nextConfirmationNotes.trim().length > 0 ? nextConfirmationNotes : null,
+      name: nextPrimaryLabel,
+      subtitle: nextSecondaryLabel,
     },
     estimates: workspace.estimates.map((estimate) =>
       estimate.id === workspace.active_estimate_id
         ? {
             ...estimate,
-            estimate_number: nextQuoteCode,
-            account_name: nextCustomerName,
-            project_name: nextItemName,
-            notes: nextConfirmationNotes,
+            estimate_number: nextReferenceCode,
+            account_name: nextPrimaryLabel,
+            project_name: nextItemLabel,
             updated_at: new Date().toISOString(),
           }
         : estimate,
@@ -1161,7 +1144,7 @@ export function updateStarterPreConfigurationFieldInWorkspace(
 }
 
 /**
- * Updates the narrative estimate note shown on the workspace and quote tabs.
+ * Updates the narrative estimate note shown on the workspace tabs.
  */
 export function updateEstimateNotesInWorkspace(
   workspace: CpqWorkspace,
@@ -1176,7 +1159,7 @@ export function updateEstimateNotesInWorkspace(
 }
 
 /**
- * Stores the intake prompt so the configure screen behaves like a working sample.
+ * Stores the intake prompt so the configure screen behaves like a working starter.
  */
 export function updateEstimateIntakePromptInWorkspace(
   workspace: CpqWorkspace,
@@ -1191,7 +1174,8 @@ export function updateEstimateIntakePromptInWorkspace(
 }
 
 /**
- * THIS IS SAMPLE FILE DATA ONLY. DO NOT TREAT IT AS REAL CUSTOMER CONTENT.
+ * File attachments keep the workspace file actions functional without a
+ * server-backed document store.
  */
 export function addExampleAttachmentToEstimateInWorkspace(
   workspace: CpqWorkspace,
@@ -1202,8 +1186,8 @@ export function addExampleAttachmentToEstimateInWorkspace(
     attachments: [
       {
         id: createWorkspaceId("att"),
-        file_name: `example-file-${estimate.attachments.length + 1}.pdf`,
-        kind: "Example Upload",
+        file_name: `workspace-file-${estimate.attachments.length + 1}.pdf`,
+        kind: "Workspace Upload",
         added_at: new Date().toISOString(),
       },
       ...estimate.attachments,
@@ -1213,7 +1197,7 @@ export function addExampleAttachmentToEstimateInWorkspace(
 }
 
 /**
- * Removes an example attachment from the estimate files tab.
+ * Removes a workspace attachment from the estimate files tab.
  */
 export function removeAttachmentFromEstimateInWorkspace(
   workspace: CpqWorkspace,
@@ -1230,7 +1214,7 @@ export function removeAttachmentFromEstimateInWorkspace(
 }
 
 /**
- * THIS IS EXAMPLE-ONLY DIVISION DATA. DO NOT REUSE IT FOR REAL RECORD CREATION.
+ * Creates a neutral workspace division record for local-only shell actions.
  */
 export function createDivisionInWorkspace(
   workspace: CpqWorkspace,
@@ -1245,12 +1229,12 @@ export function createDivisionInWorkspace(
     id: estimateId,
     estimate_number: estimateNumber,
     account_name: workspace.account.name,
-    project_name: `Division ${nextIndex} Expansion`,
+    project_name: `Workspace ${nextIndex}`,
     revision_label: "1.0",
     region: "Default",
     status: "draft",
     workflow_stage: defaultWorkflowStepLabel,
-    notes: "Example record created from the shell reset/test utilities.",
+    notes: "Record created from the shell reset/test utilities.",
     intake_prompt: "",
     build_selections: [],
     modifiers: [],
@@ -1291,7 +1275,7 @@ export function setActiveEstimateInWorkspace(
 }
 
 /**
- * Updates the example role switcher used by the header.
+ * Updates the role switcher used by the header.
  */
 export function setActiveRoleInWorkspace(
   workspace: CpqWorkspace,
