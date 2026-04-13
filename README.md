@@ -1,10 +1,19 @@
-# Template for React Router App with Tailwind CSS and SQLite
+# Backend Integration Reference for React Router App with Tailwind CSS and SQLite
 
-**This is a code style and architecture template repository.** Use it as a reference for coding patterns, project structure, and development standards when building production applications.
+**This is a reference and file/config storage repository for backend integration.** Use it as the canonical source for backend patterns, project structure, packages, configs, starter files, and test setup when converting a generated client-only app into the standard Customware backend-enabled stack.
 
-The template demonstrates a simplified, modern stack with React Router v7, TypeScript, Tailwind CSS, Hono, tRPC, and SQLite via Drizzle + better-sqlite3. The `app/` shell is the starter surface; the `server/` tree is a backend reference slice that can be kept, replaced, or removed when your real API lands.
+The repository demonstrates the approved stack with React Router v7, TypeScript, Tailwind CSS, Hono, tRPC, and SQLite via Drizzle + better-sqlite3. The `app/` shell is still a starter surface, but the main purpose of this repo is to give agents and developers one place to check how backend integration should be done and to copy the needed backend files, configs, package entries, and library choices from here instead of inventing them ad hoc.
 
-> **⚠️ Important**: This is a **template repository** showcasing patterns and structure, not a feature-complete product.
+> **⚠️ Important**: This is a **reference repository**, not a feature-complete product and not the business source of truth for any shipped app.
+>
+> During backend integration work, agents should use this repo to:
+> - clarify doubts about the intended backend stack and structure
+> - copy/adapt backend files and folders
+> - copy/adapt config files and package dependencies
+> - copy/adapt unit-test and end-to-end test setup, patterns, and supporting files
+> - follow the established transport, database, contract, and service patterns
+> - follow the established testing stack and quality-gate conventions
+> - avoid hunting across unrelated repos for backend setup decisions
 
 > **Required reading**: Review [AGENTS.md](./AGENTS.md) before development for commands, coding standards, and architecture rules.
 
@@ -18,6 +27,8 @@ The template demonstrates a simplified, modern stack with React Router v7, TypeS
 - **UI Component Library** - Reusable, tested UI primitives
 - **Database Patterns** - Drizzle schema + migration workflow
 - **Project Organization** - Scalable app/server/test directory structure
+- **Backend Integration Source** - the canonical place to copy backend files, configs, packages, and conventions from
+- **Testing Reference Source** - the canonical place to copy/adapt unit and end-to-end testing setup from during backend integration
 
 ### ❌ This Template Does NOT Provide:
 
@@ -28,10 +39,12 @@ The template demonstrates a simplified, modern stack with React Router v7, TypeS
 ### 💡 How to Use This Template:
 
 1. Study the patterns in `app/`, `server/`, and `tests/`
-2. Copy the structure into your own project
-3. Replace or remove the backend slice when you wire your real backend
-4. Keep strict contracts and Result-based error handling
-5. Follow [AGENTS.md](./AGENTS.md) for development workflow
+2. Use this repo as the first place to resolve uncertainty about backend integration choices
+3. Copy or adapt the needed backend files, configs, dependency entries, and structure into your own project
+4. Copy or adapt the needed unit-test and end-to-end test files, helpers, and dependency setup from this repo
+5. Replace the sample business module shapes with the consuming app's real domain logic
+6. Keep strict contracts and Result-based error handling
+7. Follow [AGENTS.md](./AGENTS.md) for development workflow
 
 ## 🔍 What's Working vs What's a Pattern
 
@@ -48,6 +61,27 @@ The template demonstrates a simplified, modern stack with React Router v7, TypeS
 - **tRPC client/provider files in `app/lib/`** - Available as typed integration scaffolding
 - **Backend note** - The `server/` files are intentionally reference-only until a consuming project swaps in its own API contract
 - **Single-module backend design** - Intentionally minimal for extension
+
+## Backend Integration Role
+
+This repository exists so backend integration is predictable.
+
+When converting a client-only generated project into a backend-enabled project, use this repo as the canonical reference for:
+
+- backend stack selection
+- package and library choices
+- config file shape
+- `server/` directory layout
+- test directory layout
+- Hono + tRPC transport setup
+- Zod contract placement
+- neverthrow service/query patterns
+- Drizzle + SQLite setup and migration flow
+- unit-test setup and patterns
+- end-to-end test setup and patterns
+- validation and quality-gate conventions
+
+The goal is not to copy the sample domain module literally. The goal is to reuse the stack, file layout, configuration patterns, backend conventions, and testing setup so agents do not need to improvise a backend architecture or test strategy from scratch.
 
 ## Template Features & Patterns
 
