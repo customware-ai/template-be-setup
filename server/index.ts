@@ -63,7 +63,7 @@ app.use(
   "/trpc/*",
   trpcServer({
     router: appRouter,
-  })
+  }),
 );
 
 // ============================================================
@@ -99,24 +99,14 @@ app.post("/logs", async (c) => {
 // ============================================================
 
 /**
- * Serve static assets from client directory
- * This includes JS, CSS, images, fonts, etc.
+ * Serve built client files from the client directory.
+ * This includes Vite assets, public files, images, fonts, favicon, etc.
  */
 app.use(
-  "/assets/*",
+  "/*",
   serveStatic({
     root: CLIENT_DIR,
-  })
-);
-
-/**
- * Serve favicon
- */
-app.use(
-  "/favicon.ico",
-  serveStatic({
-    path: path.join(CLIENT_DIR, "favicon.ico"),
-  })
+  }),
 );
 
 // ============================================================
@@ -126,9 +116,7 @@ app.use(
 /**
  * Health check endpoint for monitoring
  */
-app.get("/health", (c) =>
-  c.json({ status: "ok", timestamp: new Date().toISOString() })
-);
+app.get("/health", (c) => c.json({ status: "ok", timestamp: new Date().toISOString() }));
 
 // ============================================================
 // GLOBAL ERROR HANDLING
@@ -144,7 +132,7 @@ app.get("/health", (c) =>
  * frontend logging.
  */
 app.onError((error, c) => {
-  void logServerPayload({
+  logServerPayload({
     source: "server",
     level: "error",
     message: error instanceof Error ? error.message : "Unhandled server error.",
@@ -170,7 +158,7 @@ app.onError((error, c) => {
  * Do NOT remove this handler; it is part of expected observability coverage.
  */
 app.notFound((c) => {
-  void logServerPayload({
+  logServerPayload({
     source: "server",
     level: "warn",
     message: `No route handler found for ${c.req.method} ${c.req.path}`,
