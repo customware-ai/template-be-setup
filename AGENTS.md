@@ -315,6 +315,8 @@ const createCustomerMutation = trpc.createCustomer.useMutation();
    - Run `npm run check` at the very end only when multiple areas are updated
    - This runs: typecheck + lint
    - Use `npm run check` as the static-analysis gate so obvious type and lint errors are fixed before deeper verification
+   - For any database schema or migration change, run `npm run db:generate` before completion and treat any unexpected follow-up migration file as a bug that must be fixed
+   - For any database schema or migration change, the repository must end in a state where `npm run db:generate` reports no unexpected schema drift; if publish runs a generate step before migrate, a locally healthy `db:migrate` result alone is not sufficient
    - After `npm run check` passes for code changes, run interactive Playwright verification for the changed flow and fix/retry until it passes
    - Interactive Playwright is the user-perspective gate and should be treated as the source of truth for whether the changed flow behaves correctly in the UI
    - After interactive verification passes, create or modify and run only the targeted unit/component/integration test files for the changed behavior and fix/retry until they pass
@@ -461,6 +463,14 @@ When creating a new migration:
    - Verify tables/columns were created correctly
    - Write/update tests for any new database operations
 
+**Drizzle Metadata Integrity:**
+
+- Never add or update a migration by editing only `server/db/migrations/00xx_*.sql` and `server/db/migrations/meta/_journal.json`.
+- Drizzle migration history is not complete unless the matching `server/db/migrations/meta/00xx_snapshot.json` files are present and chained correctly.
+- If a migration is created manually for any reason, you must also create or restore the matching snapshot metadata so `db:generate` has the correct baseline.
+- Data-only migrations still need a corresponding snapshot file in `server/db/migrations/meta/`, even when the schema shape is unchanged from the prior snapshot.
+- Publish/staging may run `db:generate` before `db:migrate`, so missing snapshot metadata can create bogus follow-up migrations and break deploys even when local `db:migrate` appears healthy.
+
 ```bash
 # After creating a migration file:
 npm run db:generate          # Generate SQL migration
@@ -468,7 +478,7 @@ npm run db:migrate           # Apply the migration
 npm test                     # Ensure tests pass
 ```
 
-**CRITICAL**: Always run and verify migrations immediately after creating them. Never commit a migration file without confirming it runs successfully.
+**CRITICAL**: Always run and verify migrations immediately after creating them. Never commit a migration file without confirming it runs successfully, and never commit a migration/history change unless the SQL file, snapshot file, and journal entry all agree.
 
 **Database Query Pattern:**
 
